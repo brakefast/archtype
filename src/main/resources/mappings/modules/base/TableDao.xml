@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ciocem.modules.base.dao.TableDao">
+
+	<select id="getColumnLsByTableName" resultType="com.ciocem.modules.base.vo.ColumnVO" >
+		<if test="dbName == 'mssql'">
+			SELECT
+				a.name AS columnName,
+				b.name AS columnType,
+				COLUMNPROPERTY(a.id,a.name,'PRECISION') AS columnLength,
+				isnull(g.[value],'') AS columnRemark
+			FROM  syscolumns a
+			LEFT JOIN  systypes b ON a.xusertype=b.xusertype
+			INNER JOIN sysobjects d ON a.id=d.id  AND d.xtype='U' AND  <![CDATA[d.name<>'dtproperties']]>
+			LEFT JOIN syscomments e ON  a.cdefault=e.id
+			LEFT JOIN sys.extended_properties g ON a.id=G.major_id AND a.colid=g.minor_id
+			WHERE d.name= #{tableName}
+			<if test="columnName != null and columnName != ''">
+				AND a.name = #{columnName}
+			</if>
+			order by a.id,a.colorder
+		</if>
+
+		<if test="dbName == 'mysql'">
+			SELECT
+				column_name AS 'columnName',
+				data_type AS 'columnType',
+				character_maximum_length AS 'columnLength',
+				column_comment AS 'columnRemark'
+			FROM information_schema.columns
+			WHERE table_schema = (SELECT database())
+			AND table_name = #{tableName}
+			<if test="columnName != null and columnName != ''">
+				AND column_name = #{columnName}
+			</if>
+			order by ordinal_position
+		</if>
+	</select>
+
+	<select id="getTableNameLs" resultType="String">
+
+		<if test="dbName == 'mssql'">
+			SELECT name
+			FROM ..SysObjects
+			WHERE xtype='U'
+			ORDER BY name
+		</if>
+		<if test="dbName == 'mysql'">
+-- 			SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'ciocem'
+			SELECT TABLE_NAME AS 'name' FROM information_schema.tables WHERE  table_type='base table' ORDER BY TABLE_NAME;
+		</if>
+	</select>
+
+	<select id="getTableNameLsByColumnName" resultType="String">
+		SELECT col.table_name
+		FROM   information_schema.columns col,
+			   information_schema.tables tab
+		WHERE  col.table_name = tab.table_name
+		   AND tab.table_type = 'BASE TABLE'
+		   AND col.column_name = #{columnName}
+		ORDER  BY col.table_name
+	</select>
+	<select id="getTotalByColumn" resultType="java.lang.Integer">
+		SELECT COUNT(1) FROM ${tableName} WHERE ${columnName} = #{columnValue}
+	</select>
+
+	<select id="getTableNameLsByPartColumnName" resultType="String">
+		SELECT col.table_name
+		FROM   information_schema.columns col,
+		information_schema.tables tab
+		WHERE  col.table_name = tab.table_name
+		AND tab.table_type = 'BASE TABLE'
+		<if test="partColumnName != null and partColumnName !=''">
+			<bind name="partColumnName1" value="'%' + partColumnName +'%'"/>
+			AND col.column_name LIKE #{partColumnName1}
+		</if>
+		ORDER  BY col.table_name
+	</select>
+	<select id="getTableNameAndColumnNameLsByPartColumnName" resultType="com.ciocem.modules.base.vo.TableColumnVO">
+		SELECT col.table_name, col.column_name
+		FROM   information_schema.columns col,
+		information_schema.tables tab
+		WHERE  col.table_name = tab.table_name
+		AND tab.table_type = 'BASE TABLE'
+		<if test="partColumnName != null and partColumnName !=''">
+			<bind name="partColumnName1" value="'%' + partColumnName +'%'"/>
+			AND col.column_name LIKE #{partColumnName1}
+		</if>
+		ORDER  BY col.table_name
+	</select>
+	<select id="getTotalByPartColumn" resultType="java.lang.Integer">
+		SELECT COUNT(1) FROM ${tableName} WHERE
+		${columnName} = #{columnValue}
+	</select>
+	<select id="getTableColumnNameLs" resultType="String">
+		SELECT col.column_name
+		FROM   information_schema.columns col,
+		information_schema.tables tab
+		WHERE  col.table_name = tab.table_name
+		AND tab.table_type = 'BASE TABLE'
+		<if test="partColumnName != null and partColumnName !=''">
+			<bind name="partColumnName1" value="'%' + partColumnName +'%'"/>
+			AND col.column_name LIKE #{partColumnName1}
+		</if>
+		AND col.table_name =#{tableName}
+		ORDER  BY col.table_name
+	</select>
+
+
+	<select id="executeSQL" parameterType="String" resultType="java.util.LinkedHashMap">
+		${value}
+	</select>
+
+	<select id="getTableRecordById" parameterType="String" resultType="java.util.Map">
+		SELECT ${columnNames} FROM ${tableName} WHERE id=#{id}
+	</select>
+
+	<select id="tableExistsJudge" resultType="java.lang.Integer">
+		SELECT count(1) FROM sysobjects  WHERE name=#{tableName}
+	</select>
+
+	<select id="tableColumnExistsJudge" resultType="java.lang.Integer">
+		SELECT  COUNT(1)
+		FROM sysobjects a,syscolumns b
+		where a.id=b.id AND b.name=#{columnName} AND a.name=#{tableName}
+	</select>
+
+
+
+</mapper>
