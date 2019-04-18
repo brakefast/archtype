@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ciocem.modules.sys.dao.ModuleManagerDao">
+
+	<sql id="moduleManagerColumns">
+		a.create_date AS "createDate",
+		a.id AS "id",
+		a.bus_type AS
+		"busType",
+		a.module_key AS "moduleKey",
+		a.create_by AS "createBy.id",
+		a.org_id as "orgId",
+		a.bus_id AS "busId"
+	</sql>
+
+	<select id="get" resultType="ModuleManager">
+		SELECT
+		<include refid="moduleManagerColumns" />
+		FROM sys_module_manager a
+		WHERE a.id = #{id}
+	</select>
+
+	<insert id="insert">
+		INSERT INTO sys_module_manager(
+		create_date,
+		id,
+		bus_type,
+		module_key,
+		create_by,
+		bus_id,
+		org_id
+		) VALUES (
+		#{createDate},
+		#{id},
+		#{busType},
+		#{moduleKey},
+		#{createBy.id},
+		#{busId},
+		#{orgId}
+		)
+	</insert>
+
+	<update id="update">
+		UPDATE sys_module_manager
+		SET
+		id = #{id},
+		bus_type = #{busType},
+		module_key = #{moduleKey},
+		bus_id = #{busId}
+		WHERE id = #{id}
+	</update>
+
+	<update id="delete">
+		DELETE FROM sys_module_manager WHERE id = #{id}
+	</update>
+
+	<select id="findList" resultType="ModuleManager">
+		SELECT
+		<include refid="moduleManagerColumns" />
+		FROM sys_module_manager a
+		<where>
+
+		</where>
+	</select>
+
+	<select id="getVOById" resultType="com.ciocem.modules.sys.vo.ModuleManagerVO">
+		SELECT
+		<include refid="moduleManagerColumnsMore" />
+		<include refid="moduleManagerColumns" />
+		FROM sys_module_manager a
+		<include refid="moduleManagerJoins" />
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findListByVO" resultType="com.ciocem.modules.sys.vo.ModuleManagerVO">
+		SELECT
+		<include refid="moduleManagerColumnsMore" />
+		<include refid="moduleManagerColumns" />
+		FROM sys_module_manager a
+		<include refid="moduleManagerJoins" />
+		<where>
+			<include refid="moduleManagerWhere" />
+		</where>
+	</select>
+
+	<select id="getListByPage" resultType="com.ciocem.modules.sys.vo.ModuleManagerVO">
+		SELECT
+		<choose>
+			<when test="entity.dbName == 'mssql'">
+				* FROM
+				(select ROW_NUMBER() OVER( order by a.update_date desc) as
+				'rownum',
+				<include refid="moduleManagerColumnsMore" />
+				<include refid="moduleManagerColumns" />
+				from sys_module_manager a
+				<include refid="moduleManagerJoins" />
+				<where>
+					<include refid="moduleManagerWhere" />
+				</where>
+				) a
+			</when>
+			<otherwise>
+				<include refid="moduleManagerColumnsMore" />
+				<include refid="moduleManagerColumns" />
+				FROM sys_module_manager a
+				<include refid="moduleManagerJoins" />
+				<include refid="moduleManagerWhere" />
+			</otherwise>
+		</choose>
+		<where>
+			<if test="entity.dbName == 'mssql'">AND rownum between ${page.rowNumStart} and
+				${page.rowNumEnd}</if>
+		</where>
+		<if test="entity.dbName == 'mysql'">LIMIT ${page.recordStart},${page.pageSize}</if>
+	</select>
+
+	<select id="getTotalByPage" parameterType="java.util.Map"
+		resultType="java.lang.Integer">
+		SELECT COUNT(1)
+		FROM sys_module_manager a
+		<include refid="moduleManagerJoins" />
+		<where>
+			<include refid="moduleManagerWhere" />
+		</where>
+	</select>
+
+	<sql id="moduleManagerColumnsMore"></sql>
+	<sql id="moduleManagerJoins"></sql>
+	<sql id="moduleManagerWhere">
+	</sql>
+
+	<sql id="moduleColumns">
+		a.id,
+		a.module_type AS moduleType,
+		CASE WHEN a.class_name ='CioForm' THEN a.module_key ELSE a.class_name end AS moduleKey,
+		a.module_name AS moduleName,
+		a.remarks
+	</sql>
+	<sql id="moduleColumnsMore"></sql>
+	<sql id="moduleJoins"></sql>
+	<sql id="moduleWhere">
+		<if test="entity.moduleType != null and entity.moduleType !=''">
+			AND a.module_type=#{entity.moduleType}
+		</if>
+		<if test="entity.moduleKey != null and entity.moduleKey !=''">
+			AND a.class_name=#{entity.moduleKey}
+		</if>
+		<if test="entity.moduleName != null and entity.moduleName !=''">
+			<bind name="moduleName" value="'%' +entity.moduleName +'%'"/>
+			AND a.module_name like #{moduleName}
+		</if>
+	</sql>
+
+	<select id="getModulesByPage" resultType="com.ciocem.modules.sys.vo.ModuleVO">
+		SELECT
+		<choose>
+			<when test="entity.dbName == 'mssql'">
+				* FROM
+				(select ROW_NUMBER() OVER( order by
+				a.module_type,a.module_name) as 'rownum',
+				<include refid="moduleColumnsMore" />
+				<include refid="moduleColumns" />
+				from ACT_CIO_MODULE a
+				<include refid="moduleJoins" />
+				<where>
+					<include refid="moduleWhere" />
+				</where>
+				) a
+			</when>
+			<otherwise>
+				<include refid="moduleColumnsMore" />
+				<include refid="moduleColumns" />
+				FROM ACT_CIO_MODULE a
+				<include refid="moduleJoins" />
+				<where>
+					<include refid="moduleWhere" />
+				</where>
+			</otherwise>
+		</choose>
+		<where>
+			<if test="entity.dbName == 'mssql'">AND rownum between ${page.rowNumStart} and
+				${page.rowNumEnd}</if>
+		</where>
+		<if test="entity.dbName == 'mysql'">LIMIT ${page.recordStart},${page.pageSize}</if>
+	</select>
+
+	<select id="getModuleTotalByPage" parameterType="java.util.Map"
+		resultType="java.lang.Integer">
+		SELECT COUNT(1)
+		FROM ACT_CIO_MODULE a
+		<include refid="moduleJoins" />
+		<where>
+			<include refid="moduleWhere" />
+		</where>
+	</select>
+	<insert id="saveData">
+		<foreach collection="RightAdds" item="item" index="index">
+			INSERT INTO sys_module_manager(
+			create_date,
+			id,
+			bus_type,
+			module_key,
+			create_by,
+			bus_id,
+			org_id
+			) VALUES (
+			#{item.createDate},
+			#{item.id},
+			#{item.busType},
+			#{item.moduleKey},
+			#{item.createBy.id},
+			#{item.busId},
+			#{item.orgId}
+			)
+		</foreach>
+	</insert>
+	<delete id="deleteByList">
+		<foreach collection="RightDels" item="item" index="index">
+			DELETE FROM sys_module_manager WHERE bus_id=#{item.busId} and
+			bus_type=#{item.busType} and org_id=#{orgId}
+		</foreach>
+	</delete>
+	<update id="update4Lock">
+		UPDATE ACT_CIO_MODULE SET remarks=remarks WHERE id=#{id}
+	</update>
+	<select id="getListByVO" resultType="com.ciocem.modules.sys.vo.ModuleManageVO">
+		SELECT b.id,a.type,b.login_name AS cno,b.name AS cname FROM
+		(SELECT bus_type AS type, bus_id AS userid FROM sys_module_manager WHERE bus_type='1' AND org_id=#{entity.orgId} AND module_key=#{entity.moduleKey}) a 
+		JOIN sys_user b ON a.userid=b.id
+		UNION
+		SELECT b.id,a.type,b.no AS cno,b.name AS cname FROM
+		(SELECT bus_type AS type, bus_id AS roleid FROM sys_module_manager WHERE bus_type='0' AND org_id=#{entity.orgId} AND module_key=#{entity.moduleKey}) a
+		JOIN sys_role b ON a.roleid=b.id
+	</select>
+	<select id="getCountByManager" resultType="java.lang.Integer">
+		SELECT count(1) FROM sys_module_manager  WHERE org_id=#{orgId} AND module_key=#{moduleKey} AND ((bus_type='1' AND bus_id=#{userId}) OR (bus_type='0' AND EXISTS(
+		SELECT 1 FROM sys_role_user WHERE org_id=#{orgId} AND user_id=#{userId} AND role_id=sys_module_manager.bus_id
+		)))
+	</select>
+</mapper>

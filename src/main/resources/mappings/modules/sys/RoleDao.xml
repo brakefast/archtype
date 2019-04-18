@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ciocem.modules.sys.dao.RoleDao">
+
+	<sql id="roleColumns">
+		a.id AS "id",
+		a.org_id AS "orgId",
+		a.name AS "name",
+		a.no AS "no",
+		a.is_sys AS "isSys",
+		a.useable AS "useable",
+		a.create_by AS
+		"createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS
+		"updateBy.id",
+		a.update_date AS "updateDate",
+		a.del_flag AS "delFlag",
+		a.mnemonic_code AS "mnemonicCode",
+		a.remarks AS "remarks"
+	</sql>
+
+
+	<select id="get" resultType="Role">
+		SELECT
+		<include refid="roleColumns" />
+		FROM sys_role a
+		WHERE a.id = #{id}
+	</select>
+
+	<insert id="insert">
+		INSERT INTO sys_role(
+		id,
+		org_id,
+		name,
+		no,
+		is_sys,
+		useable,
+		create_by,
+		create_date,
+		update_by,
+		update_date,
+		del_flag,
+		mnemonic_code,
+		remarks
+		) VALUES (
+		#{id},
+		#{orgId},
+		#{name},
+		#{no},
+		#{isSys},
+		#{useable},
+		#{createBy.id},
+		#{createDate},
+		#{updateBy.id},
+		#{updateDate},
+		#{delFlag},
+		#{mnemonicCode},
+		#{remarks}
+		)
+	</insert>
+
+	<update id="update">
+		UPDATE sys_role
+		SET
+		org_id = #{orgId},
+		name = #{name},
+		no = #{no},
+		is_sys = #{isSys},
+		useable = #{useable},
+		update_by = #{updateBy.id},
+		update_date = #{updateDate},
+		mnemonic_code = #{mnemonicCode},
+		remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+
+	<update id="delete">
+		DELETE FROM sys_role
+		WHERE id = #{id}
+	</update>
+
+	<select id="findList" resultType="Role">
+		SELECT
+		<include refid="roleColumns" />
+		FROM sys_role a
+		<where>
+
+		</where>
+	</select>
+
+	<select id="getVOById" resultType="com.ciocem.modules.sys.vo.RoleVO">
+		SELECT
+		<include refid="roleColumnsMore" />
+		<include refid="roleColumns" />
+		FROM sys_role a
+		<include refid="roleJoins" />
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findListByVO" resultType="com.ciocem.modules.sys.vo.RoleVO">
+		SELECT
+		<include refid="roleColumnsMore" />
+		<include refid="roleColumns" />
+		FROM sys_role a
+		<include refid="roleJoins" />
+		<where>
+			<include refid="roleWhere" />
+		</where>
+	</select>
+
+	<select id="getListByPage" resultType="com.ciocem.modules.sys.vo.RoleVO">
+		SELECT
+		<choose>
+			<when test="entity.dbName == 'mssql'">
+				* FROM
+				(select ROW_NUMBER() OVER( order by a.no,a.id desc) as 'rownum',
+				<include refid="roleColumnsMore" />
+				<include refid="roleColumns" />
+				from sys_role a
+				<include refid="roleJoins" />
+				<where>
+					<include refid="roleWhere" />
+				</where>
+				) a
+			</when>
+			<otherwise>
+				<include refid="roleColumnsMore" />
+				<include refid="roleColumns" />
+				FROM sys_role a
+				<include refid="roleJoins" />
+				<include refid="roleWhere" />
+			</otherwise>
+		</choose>
+		<where>
+			<if test="entity.dbName == 'mssql'">AND rownum between ${page.rowNumStart} and
+				${page.rowNumEnd}</if>
+		</where>
+		<if test="entity.dbName == 'mysql'">LIMIT ${page.recordStart},${page.pageSize}</if>
+	</select>
+
+	<select id="getTotalByPage" parameterType="java.util.Map"
+		resultType="java.lang.Integer">
+		SELECT
+		COUNT(1)
+		FROM sys_role a
+		<include refid="roleJoins" />
+		<where>
+			<include refid="roleWhere" />
+		</where>
+	</select>
+
+	<sql id="roleColumnsMore">
+		b.organization_name AS orgName,
+	</sql>
+	<sql id="roleJoins">
+		LEFT JOIN hr_organization b ON a.org_id=b.id
+	</sql>
+	<sql id="roleWhere">
+		<!--<if test="entity.keyword != null and entity.keyword != ''"> -->
+		<!--AND ( a.no like -->
+		<!--<if test="entity.dbName == 'oracle'">'%'||#{entity.keyword}||'%'</if> -->
+		<!--<if test="entity.dbName == 'mysql'">CONCAT('%', #{entity.keyword}, 
+			'%')</if> -->
+		<!--<if test="entity.dbName == 'mssql'">'%'+#{entity.keyword}+'%'</if> -->
+		<!--</if> -->
+		<!--<if test="entity.keyword != null and entity.keyword != ''"> -->
+		<!--OR a.name like -->
+		<!--<if test="entity.dbName == 'oracle'">'%'||#{entity.keyword}||'%'</if> -->
+		<!--<if test="entity.dbName == 'mysql'">CONCAT('%', #{entity.keyword}, 
+			'%')</if> -->
+		<!--<if test="entity.dbName == 'mssql'">'%'+#{entity.keyword}+'%'</if> -->
+		<!--) -->
+		<!--</if> -->
+		<if test="entity.keyword != null and entity.keyword != ''">
+			<bind name="keyword" value="'%' + entity.keyword + '%'" />
+			AND ( a.no like #{keyword} OR a.name like #{keyword})
+		</if>
+		<if test="entity.roleIdLs != null and entity.roleIdLs != ''">
+			AND a.id IN
+			<foreach collection="entity.roleIdLs" index="index" item="roleId"
+				open="(" separator="," close=")">
+				#{roleId}
+			</foreach>
+		</if>
+		<if test = "entity.orgId != null and entity.orgId !=''">
+			AND a.org_id = #{entity.orgId}
+		</if>
+	</sql>
+
+	<select id="getTotalByRoleIdAndUserId" resultType="java.lang.Integer">
+		SELECT COUNT(1)
+		FROM sys_role_user
+		WHERE user_id=#{userId} AND role_id=#{roleId} AND org_id=#{orgId}
+	</select>
+	<select id="getRoleListByUserId" resultType="Role">
+		SELECT
+		<include refid="roleColumns" />
+		FROM sys_role a
+		WHERE a.id in (SELECT role_id FROM sys_role_user WHERE
+		user_id=#{userId} and org_id=#{orgId})
+	</select>
+	<select id="getRoleListByUserId2" resultType="Role">
+		SELECT
+		<include refid="roleColumns" />
+		FROM sys_role a
+		WHERE a.id in (SELECT role_id FROM sys_role_user WHERE
+		user_id=#{userId})
+	</select>
+
+	<select id="findAllList" resultType="Role">
+		SELECT
+		<include refid="roleColumns" />
+		FROM sys_role a
+		<where>
+			<if test="keyword != null and keyword != ''">
+				<bind name="keyWord" value="'%'+keyword+'%'"/>
+				AND (a.no like #{keyWord} OR a.name like #{keyWord})
+			</if>
+			<if test="filterFlag != 1">
+				AND org_id=#{orgId}
+			</if>
+		</where>
+		ORDER BY a.no, a.name
+	</select>
+
+	<select id="getRightTreeData" resultType="com.ciocem.modules.sys.vo.RoleRight4TreeVO">
+		SELECT a.id,
+		a.parent_id AS pId,a.name,
+		CASE WHEN a.parent_id IS NULL OR
+		a.parent_id='0' THEN 1 ELSE 0 END AS 'open',
+		CASE WHEN b.right_id IS
+		NULL THEN 0 ELSE 1 END AS checked
+		FROM (SELECT id,parent_id,name,sort FROM
+		sys_menu) a
+		LEFT JOIN (SELECT right_id FROM sys_permission WHERE
+		bustype='2' AND org_id=#{entity.orgId} AND busid=#{entity.roleId}) b
+		ON a.id=b.right_id order by a.sort
+	</select>
+	<select id="getUserByRoleId" resultType="com.ciocem.modules.sys.vo.User4RoleVO">
+		SELECT id, name,
+		login_name AS loginName FROM sys_user
+		WHERE EXISTS( SELECT 1 FROM sys_role_user WHERE role_id=#{entity.roleId}
+		AND org_id=#{entity.orgId} AND user_id=sys_user.id)
+		AND del_flag='0'
+	</select>
+	<select id="getCount" resultType="java.lang.Integer">
+		SELECT count(1) FROM sys_role
+		<where>
+			<if test="entity.no != null and entity.no != ''">
+				and no=#{entity.no}
+			</if>
+			<if test="entity.name != null and entity.name != ''">
+				and name=#{entity.name}
+			</if>
+			<if test="entity.orgId != null and entity.orgId != ''">
+				and org_id=#{entity.orgId}
+			</if>
+			<if test="entity.id != null and entity.id != ''">
+				and id!=#{entity.id}
+			</if>
+		</where>
+	</select>
+	<insert id="insertRoleUsers">
+		INSERT INTO sys_role_user (id, role_id, user_id, org_id) VALUES
+		<foreach collection="roleUsers" item="item" index="index" separator =",">			
+			(#{item.id},#{item.roleId},#{item.userId},#{item.orgId})
+		</foreach>
+	</insert>
+	<delete id="deleteRoleUsers">
+		DELETE FROM sys_role_user WHERE org_id=#{orgId}
+		<choose>
+			<when test="ctype == 'role'">
+				AND user_id=#{busId} AND role_id IN
+			</when>
+			<otherwise>
+				AND role_id=#{busId} AND user_id IN
+			</otherwise>
+		</choose>
+		<foreach item="item" collection="ids" separator="," open="("
+			close=")" index="">
+			#{item}
+		</foreach>
+	</delete>
+
+	<select id="getUserIdsByRoleId" resultType="java.lang.String">
+		SELECT user_id FROM sys_role_user WHERE role_id=#{roleId} AND org_id=#{orgId}
+		UNION
+		SELECT id as user_id FROM sys_user WHERE employee_files_id IN(
+			SELECT id FROM hr_employee_files WHERE station_info_id IN (
+				SELECT id FROM hr_station_info WHERE role_id=#{roleId} AND org_id=#{orgId}
+			)
+		)
+	</select>
+
+	<select id="getUserIdLsByRoleId" resultType="java.lang.String">
+		SELECT user_id FROM sys_role_user WHERE role_id=#{roleId}
+	</select>
+
+	<sql id="roleDataCols">
+		a.id, 
+		a.no AS roleNo, 
+		a.name AS roleName
+	</sql>
+	<sql id="roleDataColMore">
+		b.organization_name AS orgName,
+	</sql>
+	<sql id="roleDataJoins">
+		JOIN hr_organization b ON a.org_id=b.id 
+	</sql>
+	<sql id="roleDataWhere">
+		<if test="entity.orgId != null and entity.orgId !=''">
+			AND a.org_id=#{entity.orgId}
+		</if>
+		<if test="entity.roleNo != null and entity.roleNo !=''">
+			<bind name="roleNo" value="'%'+entity.roleNo+'%'" />
+			AND a.no like #{roleNo}
+		</if>
+		<if test="entity.roleName != null and entity.roleName !=''">
+			<bind name="roleName" value="'%'+entity.roleName+'%'" />
+			AND a.name like #{roleName}
+		</if>
+		<if test="entity.keyWord != null and entity.keyWord != ''">
+			<bind name="keyWord" value="'%'+entity.keyWord+'%'"/>
+			AND (a.no like #{keyWord} OR a.name like #{keyWord})
+		</if>
+	</sql>
+	<select id="gerRoleData" resultType="com.ciocem.modules.sys.vo.RoleDataVO">
+		SELECT
+		<choose>
+			<when test="entity.dbName == 'mssql'">
+				* FROM
+				(select ROW_NUMBER() OVER( order by a.name) as 'rownum',
+				<include refid="roleDataColMore" />
+				<include refid="roleDataCols" />
+				from sys_role a
+				<include refid="roleDataJoins" />
+				<where>
+					<include refid="roleDataWhere" />
+				</where>
+				) a
+			</when>
+			<otherwise>
+				<include refid="roleDataColMore" />
+				<include refid="roleDataCols" />
+				FROM sys_role a
+				<include refid="roleDataJoins" />
+				<include refid="roleDataWhere" />
+			</otherwise>
+		</choose>
+		<where>
+			<if test="entity.dbName == 'mssql'">AND rownum between ${page.rowNumStart} and
+				${page.rowNumEnd}</if>
+		</where>
+		<if test="entity.dbName == 'mysql'">LIMIT ${page.recordStart},${page.pageSize}</if>
+	</select>
+	
+	<select id="gerCountRoleData" parameterType="java.util.Map"
+		resultType="java.lang.Integer">
+		SELECT
+		COUNT(1)
+		FROM sys_role a
+		<include refid="roleDataJoins" />
+		<where>
+			<include refid="roleDataWhere" />
+		</where>
+	</select>
+
+
+
+	<select id="getUserIdLsByRoleIdLs" resultType="java.lang.String">
+		SELECT a.user_id
+		FROM sys_role_user a
+			LEFT JOIN sys_user u ON u.id = a.user_id
+			LEFT JOIN hr_employee_files f ON f.id = u.employee_files_id
+		WHERE f.job_status='0' AND a.role_id IN
+		<foreach item="roleId" collection="roleIdLs" separator="," open="("
+				 close=")" index="">
+			#{roleId}
+		</foreach>
+	</select>
+</mapper>

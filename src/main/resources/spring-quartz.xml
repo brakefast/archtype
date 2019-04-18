@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:context="http://www.springframework.org/schema/context" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	   xmlns:jee="http://www.springframework.org/schema/jee" xmlns:tx="http://www.springframework.org/schema/tx"
+	   xmlns:util="http://www.springframework.org/schema/util" xmlns:task="http://www.springframework.org/schema/task" xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-4.0.xsd
+		http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-4.0.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.0.xsd"
+	   default-lazy-init="true">
+
+	<!--创建指定线程池大小的ThreadPoolTaskScheduler实例-->
+	<task:scheduler id="myScheduler" pool-size="5"/>
+	<!--调度任务列表-->
+	<task:scheduled-tasks scheduler="myScheduler">
+		<task:scheduled ref="resetSerialNumJob" method="execute" cron="0 0 0 * * ?"/>
+		<task:scheduled ref="syncRecordDataJob" method="execute" cron="0 0 0 * * ?"/>
+		<task:scheduled ref="syncListScheduleJob" method="execute" cron="0 0 0 * * ?"/>
+		<task:scheduled ref="adjustPostAndSalaryLevelJob" method="execute" cron="0 0 0 * * ?"/>
+	</task:scheduled-tasks>
+
+	<!-- 同步钉钉前一天全部的打卡数据 -->
+	<bean id="syncRecordDataJob" class="com.ciocem.modules.djhr.task.SyncRecordDataJob" />
+	<!-- 同步钉钉薪资期间排班数据 -->
+	<bean id="syncListScheduleJob" class="com.ciocem.modules.djhr.task.SyncListScheduleJob" />
+	<!-- 员工岗位变动申请核准后，在调岗日期之后定时调整岗级薪级 -->
+	<bean id="adjustPostAndSalaryLevelJob" class="com.ciocem.modules.djhr.task.AdjustPostAndSalaryLevelJob" />
+
+	<!-- 线程执行器配置，用于任务注册 -->
+	<bean id="executor"
+		class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+		<property name="corePoolSize" value="10" />
+		<property name="maxPoolSize" value="100" />
+		<property name="queueCapacity" value="500" />
+	</bean>
+
+	<!-- 业务对象 -->
+	<bean id="ewSchedule" class="com.ciocem.modules.ew.util.EarlyWarningSchedule" />
+
+	<!-- 调度业务 --> <!-- 将需要执行的定时任务注入JOB中。 -->
+	<bean id="jobDetail"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<!-- 指定要执行任务的任务类。 -->
+		<property name="targetObject" ref="ewSchedule" />
+		<!-- 指定任务类中需要执行的方法 -->
+		<property name="targetMethod" value="scan" />
+	</bean>
+	<!-- 定义计划触发器类 -->
+	<bean id="cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="jobDetail" />
+		<property name="cronExpression" value="0 0/1 * * * ?" />
+	</bean>
+
+	<!-- 设置调度 -->
+	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref bean="cronTrigger" />				
+			</list>
+		</property>
+		<property name="taskExecutor" ref="executor" />
+	</bean>
+
+	<bean id="start" class="com.ciocem.modules.ew.util.EarlyWarningSchedule" init-method="scan" />
+</beans>

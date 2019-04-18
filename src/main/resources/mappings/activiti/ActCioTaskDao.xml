@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ciocem.activiti.dao.ActCioTaskDao">
+
+    <!--数据库创建视图-->
+    <select id="todoTaskView">
+		create view V_ACT_TODO_TASK as
+SELECT     A.ID_ AS TASK_ID, A.PROC_INST_ID_ AS PROC_INST_ID, A.TASK_DEF_KEY_ AS ACT_ID, A.NAME_ AS ACT_NAME, A.ASSIGNEE_ AS ASSIGNEE,A.CIO_ASSIGNEE_ AS cioAssignee,
+                      A.DELEGATION_ AS DELEGATION_ID, A.DESCRIPTION_ AS DESCRIPTION, A.CREATE_TIME_ AS CREATE_TIME, A.DUE_DATE_ AS DUE_DATE, R_1.id,
+                      R_1.create_date, R_1.form_no, R_1.form_name, R_1.process_definition_key, R_1.process_definition_id, R_1.process_instance_id, R_1.cio_model_id,
+                      R_1.cio_module_id, R_1.business_id, R_1.model_key, R_1.model_name, R_1.module_key, R_1.check_status, R_1.module_name, R_1.module_url, R_1.module_type,
+                       R_1.form_name_rules, R_1.menu_id, U.name AS user_name, R_1.applyUserName AS applyUserName
+FROM         dbo.ACT_RU_TASK AS A LEFT OUTER JOIN
+                          (SELECT     r.id, r.create_date, r.form_no, r.form_name, r.process_definition_key, r.process_definition_id, r.process_instance_id, r.cio_model_id, r.cio_module_id,
+                                                   r.business_id, m.model_key, m.model_name, u.module_key, r.check_status, u.module_name, u.module_url, u.module_type, u.form_name_rules,
+                                                   u.menu_id, usr.name AS applyUserName
+                            FROM          dbo.ACT_CIO_REL AS r LEFT OUTER JOIN
+                                                   dbo.ACT_CIO_MODEL AS m ON m.id = r.cio_model_id LEFT OUTER JOIN
+                                                   dbo.ACT_CIO_MODULE AS u ON u.id = r.cio_module_id LEFT OUTER JOIN
+                                                   dbo.sys_user AS usr ON usr.id = r.start_user_id) AS R_1 ON A.PROC_INST_ID_ = R_1.process_instance_id LEFT OUTER JOIN
+                      dbo.sys_user AS U ON U.id = A.ASSIGNEE_
+WHERE     1=1
+	</select>
+
+    <select id="getTodoListByPage" resultType="com.ciocem.activiti.vo.ActCioTaskVO">
+        SELECT
+        <choose>
+            <when test="entity.dbName == 'mssql'">
+                * FROM
+                (select ROW_NUMBER() OVER( order by a.CREATE_TIME desc) as 'rownum',
+                a.*
+                from V_ACT_TODO_TASK a
+                <where>
+                    <include refid="actCioTodoTaskWhere"/>
+                </where>
+                ) a
+            </when>
+            <otherwise>
+                * FROM V_ACT_TODO_TASK a
+                <where>
+                    <include refid="actCioTodoTaskWhere"/>
+                </where>
+            </otherwise>
+        </choose>
+        <where>
+            <if test="entity.dbName == 'mssql'">AND rownum between ${page.rowNumStart} and ${page.rowNumEnd}</if>
+        </where>
+        <if test="entity.dbName == 'mysql'">LIMIT ${page.recordStart},${page.pageSize}</if>
+    </select>
+
+    <select id="getTodoTotalByPage" parameterType="java.util.Map" resultType="java.lang.Integer">
+        SELECT COUNT(1) FROM V_ACT_TODO_TASK a
+        <where>
+            <include refid="actCioTodoTaskWhere"/>
+        </where>
+    </select>
+
+    <sql id="actCioTodoTaskWhere">
+        <if test="entity.applyUserName != null and entity.applyUserName != ''">
+            AND a.applyUserName LIKE
+            <if test="entity.dbName == 'oracle'">'%'||#{entity.applyUserName}||'%'</if>
+            <if test="entity.dbName == 'mssql'">'%'+#{entity.applyUserName}+'%'</if>
+            <if test="entity.dbName == 'mysql'">concat('%',#{entity.applyUserName},'%')</if>
+        </if>
+        <if test="entity.assignee != null and entity.assignee != ''">
+            AND a.ASSIGNEE = #{entity.assignee}
+        </if>
+        <if test="entity.processInstanceId != null and entity.processInstanceId != ''">
+            AND a.PROCESS_INSTANCE_ID = #{entity.processInstanceId}
+        </if>
+        <if test="entity.moduleType != null and entity.moduleType != ''">
+            AND a.module_type = #{entity.moduleType}
+        </if>
+        <if test="entity.moduleKey != null and entity.moduleKey != ''">
+            AND a.module_key = #{entity.moduleKey}
+        </if>
+        <if test="entity.menuId != null and entity.menuId != ''">
+            AND a.menu_id = #{entity.menuId}
+        </if>
+        <if test="entity.menuIdLs != null and entity.menuIdLs != ''">
+            AND a.menu_id IN
+            <foreach collection="entity.menuIdLs" index="index" item="menuId" open="("
+                     separator="," close=")">
+                #{menuId}
+            </foreach>
+        </if>
+        <if test="entity.moduleName != null and entity.moduleName != ''">
+            AND a.module_name LIKE
+            <if test="entity.dbName == 'oracle'">'%'||#{entity.moduleName}||'%'</if>
+            <if test="entity.dbName == 'mssql'">'%'+#{entity.moduleName}+'%'</if>
+            <if test="entity.dbName == 'mysql'">concat('%',#{entity.moduleName},'%')</if>
+        </if>
+        <if test="entity.formNo != null and entity.formNo != ''">
+            AND a.form_no LIKE
+            <if test="entity.dbName == 'oracle'">'%'||#{entity.formNo}||'%'</if>
+            <if test="entity.dbName == 'mssql'">'%'+#{entity.formNo}+'%'</if>
+            <if test="entity.dbName == 'mysql'">concat('%',#{entity.formNo},'%')</if>
+        </if>
+        <if test="entity.formName != null and entity.formName != ''">
+            <bind name="formName" value="'%'+entity.formName+'%'"/>
+            AND a.form_name like #{formName}
+        </if>
+        <if test="entity.moduleTypeLs != null and entity.moduleTypeLs != ''">
+            AND a.module_type IN
+            <foreach collection="entity.moduleTypeLs" index="index" item="moduleType" open="("
+                     separator="," close=")">
+                #{moduleType}
+            </foreach>
+        </if>
+        <if test="entity.createDate1 != null and entity.createDate1 != ''">
+            AND a.create_time >= #{entity.createDate1}
+        </if>
+        <if test="entity.createDate2 != null and entity.createDate2 != ''">
+            AND <![CDATA[a.create_time <= #{entity.createDate2}]]>
+        </if>
+    </sql>
+
+
+    <select id="getTodoTaskSum" resultType="com.ciocem.activiti.vo.ActCioTaskSumVO">
+		SELECT d.label AS 'name',v.module_type AS 'type' ,count(*) AS 'sum'
+		FROM  V_ACT_TODO_TASK v
+		LEFT JOIN sys_dict d ON d.value = v.module_type AND  d.type = 'SYS_系统模块'
+		WHERE v.module_type is not null  AND v.ASSIGNEE = #{userId}
+		GROUP BY v.module_type,d.label;
+	</select>
+
+    <select id="getStopModuleTypeList" resultType="com.ciocem.activiti.vo.ActCioApplyVO">
+		SELECT  DISTINCT(m.module_type) as 'moduleType'  FROM act_cio_rel  r
+			LEFT JOIN  ACT_CIO_MODULE m ON m.id = r.cio_module_id
+			WHERE (r.check_status='8' OR r.check_status='9' ) AND r.start_user_id=#{userId}
+			AND r.business_id NOT IN (
+			SELECT  DISTINCT(r1.business_id) FROM act_cio_rel r1 WHERE (r1.check_status='1' OR r1.check_status='2' ) AND r.start_user_id=#{userId}
+			) AND m.module_type is not null
+ 		GROUP BY m.module_type
+	</select>
+
+    <select id="getStopApplyList" resultType="com.ciocem.activiti.vo.ActCioApplyVO">
+		SELECT r.business_id,r.cio_module_id,m.module_type,m.module_name,m.module_url,m.table_name FROM act_cio_rel  r
+			LEFT JOIN  ACT_CIO_MODULE m ON m.id = r.cio_module_id
+			WHERE (r.check_status='8' OR r.check_status='9' ) AND r.start_user_id=#{userId} AND m.module_type=#{moduleType}
+			AND r.business_id NOT IN (
+			SELECT  DISTINCT(r1.business_id) FROM act_cio_rel r1 WHERE (r1.check_status='1' OR r1.check_status='2' ) AND r.start_user_id=#{userId}
+			)
+ 		GROUP BY r.business_id,r.cio_module_id,m.module_type,m.module_name,m.module_url,m.table_name
+	</select>
+    <select id="getStopApplyDetailLs" resultType="com.ciocem.activiti.vo.ActCioApplyVO">
+		SELECT r.business_id,r.form_name,r.form_no,r.cio_module_id,r.create_date as 'createDate',m.module_type,m.module_name,m.module_url
+		FROM act_cio_rel r
+			LEFT join  ACT_CIO_MODULE m on m.id = r.cio_module_id
+		WHERE r.start_user_id=#{userId} and r.business_id=#{businessId}
+		ORDER BY r.create_date desc
+	</select>
+
+    <select id="getTodoTaskByType" resultType="com.ciocem.activiti.vo.ActCioTaskVO">
+		SELECT * FROM  V_ACT_TODO_TASK v
+		WHERE v.module_type = #{moduleType} AND v.ASSIGNEE = #{userId}
+		ORDER by CREATE_TIME DESC
+	</select>
+
+    <!--我参与审批的任务-->
+    <select id="auditTaskView">
+		CREATE VIEW V_ACT_AUDIT_TASK AS
+			SELECT DISTINCT(act.ASSIGNEE_) AS assignee,act.PROC_INST_ID_,act.END_TIME_ as 'endDate',
+				rel.process_definition_id,rel.process_instance_id,rel.create_date as create_time,rel.update_date as update_time,rel.form_no,form_name,rel.check_status,rel.business_id,
+				mod.module_name,mod.module_key,mod.menu_id,mod.module_url,mod.module_type,mo.model_name as 'modelName',u.name as 'applyUserName'
+			FROM ACT_HI_ACTINST act
+			LEFT JOIN ACT_CIO_REL rel on rel.process_instance_id = act.PROC_INST_ID_
+			LEFT JOIN ACT_CIO_MODULE mod ON rel.cio_module_id  = mod.id
+			LEFT JOIN ACT_CIO_MODEL mo ON mo.id = rel.cio_model_id
+			LEFT JOIN sys_user u on u.id = rel.start_user_id
+			WHERE  rel.id is not null and act.ASSIGNEE_ is not null AND act.END_TIME_ IS NOT NULL
+	</select>
+
+    <select id="getAuditTaskListByPage" resultType="com.ciocem.activiti.vo.ActCioTaskVO">
+        SELECT
+        <choose>
+            <when test="entity.dbName == 'mssql'">
+                * FROM
+                (select ROW_NUMBER() OVER( order by
+                <choose>
+                    <when test="entity.sortBy == null or entity.sortBy == '' or entity.sortBy == 'send'">
+                        a.CREATE_TIME desc
+                    </when>
+                    <when test="entity.sortBy != null and entity.sortBy == 'exam'">
+                        a.endDate desc
+                    </when>
+                    <otherwise>
+                        a.CREATE_TIME desc
+                    </otherwise>
+                </choose>
+                ) as 'rownum',r.count,
+                a.*
+                from V_ACT_AUDIT_TASK a
+                LEFT JOIN (SELECT ISNULL(COUNT(r.bussiness_id), 0) AS 'count',bussiness_id from cio_print_record r GROUP
+                BY bussiness_id) r ON a.business_id = r.bussiness_id
+                <where>
+                    <include refid="actCioAuditTaskWhere"/>
+                </where>
+                ) a
+            </when>
+            <otherwise>
+                * FROM V_ACT_AUDIT_TASK a
+                <where>
+                    <include refid="actCioAuditTaskWhere"/>
+                </where>
+            </otherwise>
+        </choose>
+        <where>
+            <if test="entity.dbName == 'mssql'">AND rownum between ${page.rowNumStart} and ${page.rowNumEnd}</if>
+        </where>
+        <if test="entity.dbName == 'mysql'">LIMIT ${page.recordStart},${page.pageSize}</if>
+    </select>
+
+    <select id="getAuditTaskTotalByPage" parameterType="java.util.Map" resultType="java.lang.Integer">
+        SELECT COUNT(1) FROM V_ACT_AUDIT_TASK a
+        <where>
+            <include refid="actCioAuditTaskWhere"/>
+        </where>
+    </select>
+
+    <sql id="actCioAuditTaskWhere">
+        <if test="entity.assignee != null and entity.assignee != ''">
+            AND a.ASSIGNEE = #{entity.assignee}
+        </if>
+        <if test="entity.menuId != null and entity.menuId != ''">
+            AND a.menu_id = #{entity.menuId}
+        </if>
+        <if test="entity.menuIdLs != null and entity.menuIdLs != ''">
+            AND a.menu_id IN
+            <foreach collection="entity.menuIdLs" index="index" item="menuId" open="("
+                     separator="," close=")">
+                #{menuId}
+            </foreach>
+        </if>
+        <if test="entity.moduleType != null and entity.moduleType != ''">
+            AND a.module_type = #{entity.moduleType}
+        </if>
+        <if test="entity.checkStatus != null and entity.checkStatus != ''">
+            AND a.check_status = #{entity.checkStatus}
+        </if>
+        <if test="entity.moduleTypeLs != null and entity.moduleTypeLs != ''">
+            AND a.module_type IN
+            <foreach collection="entity.moduleTypeLs" index="index" item="moduleType" open="("
+                     separator="," close=")">
+                #{moduleType}
+            </foreach>
+        </if>
+        <if test="entity.moduleName != null and entity.moduleName != ''">
+            AND a.module_name LIKE
+            <if test="entity.dbName == 'oracle'">'%'||#{entity.moduleName}||'%'</if>
+            <if test="entity.dbName == 'mssql'">'%'+#{entity.moduleName}+'%'</if>
+            <if test="entity.dbName == 'mysql'">concat('%',#{entity.moduleName},'%')</if>
+        </if>
+        <if test="entity.modelName != null and entity.modelName != ''">
+            AND a.modelName LIKE
+            <if test="entity.dbName == 'oracle'">'%'||#{entity.modelName}||'%'</if>
+            <if test="entity.dbName == 'mssql'">'%'+#{entity.modelName}+'%'</if>
+            <if test="entity.dbName == 'mysql'">concat('%',#{entity.modelName},'%')</if>
+        </if>
+        <if test="entity.applyUserName != null and entity.applyUserName != ''">
+            AND a.applyUserName LIKE
+            <if test="entity.dbName == 'oracle'">'%'|a|#{entity.applyUserName}||'%'</if>
+            <if test="entity.dbName == 'mssql'">'%'+#{entity.applyUserName}+'%'</if>
+            <if test="entity.dbName == 'mysql'">concat('%',#{entity.applyUserName},'%')</if>
+        </if>
+        <if test="entity.formNo != null and entity.formNo != ''">
+            AND a.form_no LIKE
+            <if test="entity.dbName == 'oracle'">'%'||#{entity.formNo}||'%'</if>
+            <if test="entity.dbName == 'mssql'">'%'+#{entity.formNo}+'%'</if>
+            <if test="entity.dbName == 'mysql'">concat('%',#{entity.formNo},'%')</if>
+        </if>
+        <if test="entity.formName != null and entity.formName != ''">
+            <bind name="formName" value="'%'+entity.formName+'%'"/>
+            AND a.form_name like #{formName}
+        </if>
+        <if test="entity.createDate1 != null and entity.createDate1 != ''">
+            AND a.create_time >= #{entity.createDate1}
+        </if>
+        <if test="entity.createDate2 != null and entity.createDate2 != ''">
+            AND <![CDATA[a.create_time <= #{entity.createDate2}]]>
+        </if>
+        <if test="entity.endDate1 != null and entity.endDate1 != ''">
+            AND a.endDate >= #{entity.endDate1}
+        </if>
+        <if test="entity.endDate2 != null and entity.endDate2 != ''">
+            AND <![CDATA[a.endDate <= #{entity.endDate2}]]>
+        </if>
+        <if test="entity.keyword != null and entity.keyword != ''">
+            <bind name="keyword" value="'%' + entity.keyword +'%'"/>
+            AND (a.form_no LIKE #{keyword}
+            OR a.form_name LIKE #{keyword}
+            OR a.modelName LIKE #{keyword}
+            )
+        </if>
+
+    </sql>
+
+
+    <select id="getMyAuditTaskSum" resultType="com.ciocem.activiti.vo.ActCioTaskSumVO">
+        SELECT d.label AS 'name',v.module_type AS 'type' ,count(*) AS 'sum'
+        FROM V_ACT_AUDIT_TASK v
+        LEFT JOIN sys_dict d ON d.value = v.module_type AND d.type = 'SYS_系统模块'
+        WHERE v.module_type is not null AND v.ASSIGNEE = #{userId}
+        <if test="checkStatus != null and checkStatus != ''">
+            AND v.check_status = #{checkStatus}
+        </if>
+        GROUP BY v.module_type,d.label;
+    </select>
+
+    <select id="getMyAuditTaskByType" resultType="com.ciocem.activiti.vo.ActCioTaskVO">
+        SELECT * FROM V_ACT_AUDIT_TASK v
+        WHERE v.module_type = #{moduleType} AND v.ASSIGNEE = #{userId}
+        <if test="checkStatus != null and checkStatus != ''">
+            AND v.check_status = #{checkStatus}
+        </if>
+        ORDER by v.CREATE_TIME DESC
+    </select>
+    <select id="getModuleTypeNameFromTask" resultType="com.ciocem.activiti.vo.ModuleVO">
+        SELECT a.ctype,a.typename FROM
+        <choose>
+            <when test='status == "0"'>
+                (SELECT DISTINCT module_type FROM V_ACT_TODO_TASK WHERE ASSIGNEE=#{userId}) b
+            </when>
+            <when test='status == "1"'>
+                (SELECT DISTINCT module_type FROM V_ACT_AUDIT_TASK WHERE assignee=#{userId}) b
+            </when>
+            <otherwise>
+                (SELECT DISTINCT u.module_type FROM act_cio_rel a LEFT JOIN act_cio_module u on u.id = a.cio_module_id
+                WHERE a.start_user_id=#{userId}) b
+            </otherwise>
+        </choose>
+        JOIN (SELECT label AS typename,value AS ctype FROM sys_dict WHERE type='SYS_系统模块') a
+        ON b.module_type=a.ctype
+    </select>
+</mapper>

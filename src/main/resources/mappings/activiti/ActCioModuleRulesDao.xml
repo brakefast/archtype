@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ciocem.activiti.dao.ActCioModuleRulesDao">
+    
+	<sql id="actCioModuleRulesColumns">
+		a.id AS "id",
+		a.module_id AS "moduleId",
+		a.type AS "type",
+		a.param_type AS "paramType",
+		a.param_value AS "paramValue",
+		a.begin_num AS "beginNum",
+		a.end_num AS "endNum",
+		a.index_no AS "indexNo",
+		a.org_id AS "orgId",
+		a.create_date AS "createDate",
+		a.create_by AS "createBy.id",
+		a.update_date AS "updateDate",
+		a.update_by AS "updateBy.id",
+		a.remarks AS "remarks"
+	</sql>
+	
+	<select id="get" resultType="ActCioModuleRules">
+		SELECT 
+			<include refid="actCioModuleRulesColumns"/>
+		FROM ACT_CIO_MODULE_RULES a
+		WHERE a.id = #{id}
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO ACT_CIO_MODULE_RULES(
+			id,
+			module_id,
+			type,
+			param_type,
+			param_value,
+			begin_num,
+			end_num,
+			index_no,
+			org_id,
+			create_date,
+			create_by,
+			update_date,
+			update_by,
+			remarks
+		) VALUES (
+			#{id},
+			#{moduleId},
+			#{type},
+			#{paramType},
+			#{paramValue},
+			#{beginNum},
+			#{endNum},
+			#{indexNo},
+			#{orgId},
+			#{createDate},
+			#{createBy.id},
+			#{updateDate},
+			#{updateBy.id},
+			#{remarks}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE ACT_CIO_MODULE_RULES
+		SET
+			id = #{id},
+			module_id = #{moduleId},
+			type = #{type},
+			param_type = #{paramType},
+			param_value = #{paramValue},
+			begin_num = #{beginNum},
+			end_num = #{endNum},
+			index_no = #{indexNo},
+			org_id = #{orgId},
+			update_date = #{updateDate},
+			update_by = #{updateBy.id},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM ACT_CIO_MODULE_RULES WHERE id = #{id}
+	</update>
+	
+	<select id="findList" resultType="ActCioModuleRules">
+		SELECT
+			<include refid="actCioModuleRulesColumns"/>
+		FROM ACT_CIO_MODULE_RULES a
+		<where>
+			
+		</where>
+	</select>
+	
+	<select id="getVOById" resultType="com.ciocem.activiti.vo.ActCioModuleRulesVO" >
+		SELECT 
+			<include refid="actCioModuleRulesColumnsMore"/> 
+			<include refid="actCioModuleRulesColumns"/>
+		FROM ACT_CIO_MODULE_RULES a
+			<include refid="actCioModuleRulesJoins"/> 
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findListByVO" resultType="com.ciocem.activiti.vo.ActCioModuleRulesVO" >
+		SELECT 
+		    <include refid="actCioModuleRulesColumnsMore"/> 
+			<include refid="actCioModuleRulesColumns"/>
+		FROM ACT_CIO_MODULE_RULES a
+			<include refid="actCioModuleRulesJoins"/> 
+		<where>
+			<include refid="actCioModuleRulesWhere"/>
+		</where>
+		order by a.index_no asc
+	</select>
+	
+	<select id="getListByPage" resultType="com.ciocem.activiti.vo.ActCioModuleRulesVO">
+		SELECT		
+		<choose>
+			<when test="entity.dbName == 'mssql'">
+				* FROM
+				(select ROW_NUMBER() OVER( order by a.index_no asc) as 'rownum',
+				<include refid="actCioModuleRulesColumnsMore"/> 
+				<include refid="actCioModuleRulesColumns"/>
+				from ACT_CIO_MODULE_RULES a
+				<include refid="actCioModuleRulesJoins"/>
+				<where>
+				 	 <include refid="actCioModuleRulesWhere"/> 
+				</where>
+				) a
+			</when>
+			<otherwise>
+				<include refid="actCioModuleRulesColumnsMore"/> 
+				<include refid="actCioModuleRulesColumns"/>
+				FROM ACT_CIO_MODULE_RULES a
+				<include refid="actCioModuleRulesJoins"/>
+				<where>
+					<include refid="actCioModuleRulesWhere"/>
+				</where>
+			</otherwise>
+		</choose>		
+		<where>			 
+			<if test="entity.dbName == 'mssql'">AND rownum between ${page.rowNumStart}  and ${page.rowNumEnd}</if>
+		</where>
+		<if test="entity.dbName == 'mysql'">LIMIT ${page.recordStart},${page.pageSize}</if>
+	</select>
+
+	<select id="getTotalByPage" parameterType="java.util.Map" resultType="java.lang.Integer">
+		SELECT  COUNT(1)
+		FROM ACT_CIO_MODULE_RULES a
+		<include refid="actCioModuleRulesJoins"/> 
+		<where>
+			 <include refid="actCioModuleRulesWhere"/> 
+		</where>
+	</select>
+	 
+    <sql id="actCioModuleRulesColumnsMore"></sql>
+	<sql id="actCioModuleRulesJoins">
+		LEFT JOIN act_cio_module m ON m.id = a.module_id
+	</sql>
+	<sql id="actCioModuleRulesWhere">
+		<if test = "entity.moduleId != null and entity.moduleId !=''">
+			 AND a.module_id = #{entity.moduleId}
+		</if>
+		<if test = "entity.moduleKey != null and entity.moduleKey !=''">
+			AND m.module_key = #{entity.moduleKey}
+		</if>
+		<if test = "entity.type != null and entity.type !=''">
+			 AND a.type = #{entity.type}
+		</if>
+		<if test = "entity.paramType != null and entity.paramType !=''">
+			 AND a.param_type = #{entity.paramType}
+		</if>
+	</sql>
+</mapper>

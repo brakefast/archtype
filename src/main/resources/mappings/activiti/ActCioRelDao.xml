@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ciocem.activiti.dao.ActCioRelDao">
+
+	<sql id="actCioRelColumns">
+		a.id AS "id",
+		a.form_no AS "formNo",
+		a.form_name AS "formName",
+		a.process_definition_key AS "processDefinitionKey",
+		a.process_definition_id AS "processDefinitionId",
+		a.process_instance_id AS "processInstanceId",
+		a.cio_model_id AS "cioModelId",
+		a.cio_module_id AS "cioModuleId",
+		a.business_id AS "businessId",
+		a.check_status AS "checkStatus",
+		a.check_flag AS "checkFlag",
+		a.check_user_id AS "checkUserId",
+		a.start_user_id AS "startUserId",
+		a.stop_user_id AS "stopUserId",
+		a.stop_date AS "stopDate",
+		a.create_date AS "createDate",
+		a.create_by AS "createBy.id",
+		a.update_date AS "updateDate",
+		a.update_by AS "updateBy.id",
+		a.remarks AS "remarks"
+	</sql>
+
+
+	<select id="get" resultType="ActCioRel" >
+		SELECT
+		<include refid="actCioRelColumns"/>
+		FROM act_cio_rel a
+		WHERE a.id = #{id}
+	</select>
+
+	<insert id="insert">
+		INSERT INTO act_cio_rel(
+		id,
+		form_no,
+		form_name,
+		process_definition_key,
+		process_definition_id,
+		process_instance_id,
+		cio_model_id,
+		cio_module_id,
+		business_id,
+		check_status,
+		check_flag,
+		check_user_id,
+		start_user_id,
+		stop_user_id,
+		stop_date,
+		create_date,
+		create_by,
+		update_date,
+		update_by,
+		remarks
+		) VALUES (
+		#{id},
+		#{formNo},
+		#{formName},
+		#{processDefinitionKey},
+		#{processDefinitionId},
+		#{processInstanceId},
+		#{cioModelId},
+		#{cioModuleId},
+		#{businessId},
+		#{checkStatus},
+		#{checkFlag},
+		#{checkUserId},
+		#{startUserId},
+		#{stopUserId},
+		#{stopDate},
+		#{createDate},
+		#{createBy.id},
+		#{updateDate},
+		#{updateBy.id},
+		#{remarks}
+		)
+	</insert>
+
+	<update id="update">
+		UPDATE act_cio_rel
+		SET
+			form_no = #{formNo},
+			form_name = #{formName},
+			process_definition_key = #{processDefinitionKey},
+			process_definition_id = #{processDefinitionId},
+			process_instance_id = #{processInstanceId},
+			cio_model_id = #{cioModelId},
+			cio_module_id = #{cioModuleId},
+			business_id = #{businessId},
+			check_status = #{checkStatus},
+			check_flag = #{checkFlag},
+			check_user_id = #{checkUserId},
+			start_user_id = #{startUserId},
+			stop_user_id = #{stopUserId},
+			stop_date = #{stopDate},
+			update_date = #{updateDate},
+			update_by = #{updateBy.id},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+
+	<update id="delete">
+		DELETE FROM act_cio_rel
+		WHERE id = #{id}
+	</update>
+	
+	<select id="findList" resultType="ActCioRel" >
+		SELECT  <include refid="actCioRelColumns"/>
+		FROM act_cio_rel a
+	</select>
+	
+	<select id="getVOById" resultType="com.ciocem.activiti.vo.ActCioRelVO" >
+		SELECT 
+			<include refid="actCioRelColumns"/>
+			<include refid="actCioRelColumnsMore"/> 
+		FROM act_cio_rel a
+			<include refid="actCioRelJoins"/> 
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findListByVO" resultType="com.ciocem.activiti.vo.ActCioRelVO" >
+		SELECT 
+			<include refid="actCioRelColumns"/>
+		FROM act_cio_rel a
+			<include refid="actCioRelJoins"/> 
+		<where>
+			<include refid="actCioRelWhere"/>
+		</where>
+	</select>
+	
+	<select id="getListByPage" resultType="com.ciocem.activiti.vo.ActCioRelVO" >
+		SELECT
+		<include refid="actCioRelColumns"/>
+		<include refid="actCioRelColumnsMore"/> 
+		FROM 
+		<choose>
+			<when test="entity.dbName == 'mssql'">
+				(select ROW_NUMBER() OVER( order by a.update_date desc) as 'rownum', a.* from act_cio_rel a
+				<include refid="actCioRelJoins"/>
+				<where>
+				 	 <include refid="actCioRelWhere"/> 
+				</where>
+				) a
+			</when>
+			<otherwise>
+				act_cio_rel a
+			</otherwise>
+		</choose>
+		<include refid="actCioRelJoins"/>
+		<where>
+			 <include refid="actCioRelWhere"/> 
+			<if test="entity.dbName == 'mssql'">AND rownum between ${page.rowNumStart}  and ${page.rowNumEnd}</if>
+		</where>
+		<if test="entity.dbName == 'mysql'">LIMIT ${page.recordStart},${page.pageSize}</if>
+	</select>
+
+	<select id="getTotalByPage" parameterType="java.util.Map" resultType="java.lang.Integer">
+		SELECT
+		COUNT(1)
+		FROM act_cio_rel a
+		<include refid="actCioRelJoins"/> 
+		<where>
+			 <include refid="actCioRelWhere"/> 
+		</where>
+	</select>
+	 
+    <sql id="actCioRelColumnsMore">
+		,
+		u.module_key AS moduleKey,
+		u.module_name AS moduleName,
+		u.module_url AS moduleUrl,
+		m.model_key AS modelKey,
+		m.model_name AS modelName,
+		u.table_name AS tableName,
+		u.class_name AS className,
+		u.service_name AS serviceName,
+		s.name AS checkUser,
+		b.name AS startUser,
+		u.module_type AS moduleType
+	</sql>
+	<sql id="actCioRelJoins">
+		LEFT JOIN act_cio_module u on u.id = a.cio_module_id
+		LEFT JOIN act_cio_model m on m.id = a.cio_model_id
+		LEFT JOIN sys_user s on s.id = a.check_user_id
+		LEFT JOIN sys_user b on b.id = a.start_user_id
+	</sql>
+
+	<sql id="actCioRelWhere">
+		<if test="entity.processDefinitionKey != null and entity.processDefinitionKey != ''">
+			AND a.process_definition_key = #{entity.processDefinitionKey}
+		</if>
+		<if test="entity.businessId != null and entity.businessId != ''">
+			AND a.business_id = #{entity.businessId}
+		</if>
+		<if test="entity.moduleKey != null and entity.moduleKey != ''">
+			AND u.module_key = #{entity.moduleKey}
+		</if>
+		<if test="entity.processInstanceId != null and entity.processInstanceId != ''">
+			AND a.process_instance_id = #{entity.processInstanceId}
+		</if>
+		<if test="entity.moduleType != null and entity.moduleType != ''">
+			AND u.module_type = #{entity.moduleType}
+		</if>
+		<if test="entity.menuId != null and entity.menuId != ''">
+			AND u.menu_id = #{entity.menuId}
+		</if>
+		<if test="entity.menuIdLs != null and entity.menuIdLs != ''">
+			AND u.menu_id  IN
+			<foreach collection="entity.menuIdLs" index="index" item="menuId" open="("
+					 separator="," close=")">
+				#{menuId}
+			</foreach>
+		</if>
+		<if test="entity.moduleTypeLs != null and entity.moduleTypeLs != ''">
+			AND a.module_type IN
+			<foreach collection="entity.moduleTypeLs" index="index" item="moduleType" open="("
+					 separator="," close=")">
+				#{moduleType}
+			</foreach>
+		</if>
+		<if test="entity.createBy != null and entity.createBy.id != null and entity.createBy.id != ''">
+			AND a.create_by = #{entity.createBy.id}
+		</if>
+		<if test="entity.startUser!= null and entity.startUser != ''">
+			AND a.start_user_id = #{entity.startUser}
+		</if>
+		<if test="entity.stopUserId!= null and entity.stopUserId != ''">
+			AND a.stop_user_id = #{entity.stopUserId}
+		</if>
+		<if test="entity.keyword != null and entity.keyword != ''">
+			AND u.module_key LIKE
+				<if test="entity.dbName == 'oracle'">'%'||#{entity.keyword}||'%'</if>
+				<if test="entity.dbName == 'mssql'">'%'+#{entity.keyword}+'%'</if>
+				<if test="entity.dbName == 'mysql'">concat('%',#{entity.keyword},'%')</if>
+			OR u.module_name LIKE
+				<if test="entity.dbName == 'oracle'">'%'||#{entity.keyword}||'%'</if>
+				<if test="entity.dbName == 'mssql'">'%'+#{entity.keyword}+'%'</if>
+				<if test="entity.dbName == 'mysql'">concat('%',#{entity.keyword},'%')</if>
+			OR m.model_name LIKE
+				<if test="entity.dbName == 'oracle'">'%'||#{entity.keyword}||'%'</if>
+				<if test="entity.dbName == 'mssql'">'%'+#{entity.keyword}+'%'</if>
+				<if test="entity.dbName == 'mysql'">concat('%',#{entity.keyword},'%')</if>
+			OR s.name LIKE
+				<if test="entity.dbName == 'oracle'">'%'||#{entity.keyword}||'%'</if>
+				<if test="entity.dbName == 'mssql'">'%'+#{entity.keyword}+'%'</if>
+				<if test="entity.dbName == 'mysql'">concat('%',#{entity.keyword},'%')</if>
+			OR a.form_no LIKE
+				<if test="entity.dbName == 'oracle'">'%'||#{entity.keyword}||'%'</if>
+				<if test="entity.dbName == 'mssql'">'%'+#{entity.keyword}+'%'</if>
+				<if test="entity.dbName == 'mysql'">concat('%',#{entity.keyword},'%')</if>
+			OR a.form_name LIKE
+				<if test="entity.dbName == 'oracle'">'%'||#{entity.keyword}||'%'</if>
+				<if test="entity.dbName == 'mssql'">'%'+#{entity.keyword}+'%'</if>
+				<if test="entity.dbName == 'mysql'">concat('%',#{entity.keyword},'%')</if>
+		</if>
+		<if test="entity.checkStatus != null and entity.checkStatus != ''">
+			AND a.check_status = #{entity.checkStatus}
+		</if>
+		<if test="entity.checkFlag != null and entity.checkFlag != ''">
+			AND a.check_flag = #{entity.checkFlag}
+		</if>
+		<if test="entity.createDate1 != null and entity.createDate1 != ''">
+			AND a.create_date >= #{entity.createDate1}
+		</if>
+		<if test="entity.createDate2 != null and entity.createDate2 != ''">
+			AND <![CDATA[a.create_date <= #{entity.createDate2}]]>
+		</if>
+		<if test="entity.runFlag!= null and entity.runFlag != ''">
+			AND (a.check_status='1' or a.check_status='2')
+		</if>
+	</sql>
+
+	<select id="getActCioModuleInfoVOList" resultType="com.ciocem.activiti.vo.ActCioModuleInfoVO" >
+		SELECT
+			r.id,r.create_date,r.form_no,r.form_name,r.process_definition_key,r.process_definition_id,r.process_instance_id,r.cio_model_id,r.cio_module_id,r.business_id,
+			m.model_key,m.model_name,m.deployment_id,u.table_name,u.class_name,u.service_name,u.module_key,
+			u.module_name,u.module_url,u.module_type,u.form_name_rules
+		FROM ACT_CIO_REL r
+		LEFT JOIN ACT_CIO_MODEL m ON m.id = r.cio_model_id
+		LEFT JOIN ACT_CIO_MODULE u ON u.id = r.cio_module_id
+		<where>
+			<if test ="id != null and id != ''">
+				AND r.id = #{id}
+			</if>
+			<if test ="processInstanceId != null and processInstanceId != ''">
+				AND r.process_instance_id = #{processInstanceId}
+			</if>
+			<if test ="businessId != null and businessId != ''">
+				AND r.business_id = #{businessId}
+			</if>
+			<if test ="moduleKey != null and moduleKey != ''">
+				AND u.module_key = #{moduleKey}
+			</if>
+			<if test ="runFlag != null and runFlag != ''">
+				AND (r.check_status ='1' OR r.check_status='2')
+			</if>
+		</where>
+	</select>
+
+
+	<select id="getModuleInfoVOLsByBId" resultType="com.ciocem.activiti.vo.ActCioModuleInfoVO" >
+		SELECT
+		r.id,r.create_date,r.form_no,r.form_name,r.process_definition_key,r.process_definition_id,r.process_instance_id,r.cio_model_id,r.cio_module_id,r.business_id,
+		m.model_key,m.model_name,m.deployment_id,u.table_name,u.class_name,u.service_name,u.module_key,
+		u.module_name,u.module_url,u.module_type,u.form_name_rules
+		FROM ACT_CIO_REL r
+		LEFT JOIN ACT_CIO_MODEL m ON m.id = r.cio_model_id
+		LEFT JOIN ACT_CIO_MODULE u ON u.id = r.cio_module_id
+		WHERE r.business_id = #{businessId}
+		ORDER BY r.update_date desc
+	</select>
+
+	<select id="getMyApplySum" resultType="com.ciocem.activiti.vo.ActCioTaskSumVO" >
+		SELECT   d.label AS 'name',u.module_type AS 'type' ,count(*) AS 'sum'
+		FROM ACT_CIO_REL a
+			LEFT JOIN act_cio_module u on u.id = a.cio_module_id
+			LEFT JOIN sys_dict d ON d.value = u.module_type AND  d.type = 'SYS_系统模块'
+		WHERE u.module_type is not null and start_user_id =  #{startUserId} and a.check_status='1'
+		GROUP BY u.module_type,d.label;
+	</select>
+
+	<select id="getApplyTaskByType" resultType="com.ciocem.activiti.vo.ActCioTaskVO" >
+		SELECT
+			a.form_no AS 'formNo',
+			a.form_name AS 'formName',
+			a.business_id AS 'businessId',
+			a.process_instance_id AS 'processInstanceId',
+			a.process_definition_id AS 'processDefinitionId',
+			a.create_date AS 'createTime',
+			a.check_status AS 'checkStatus',
+			a.create_by AS 'assignee',
+			u.module_name AS 'moduleName',
+			u.module_key AS 'moduleKey',
+			u.module_url AS 'moduleUrl',
+			u.module_type AS 'moduleType'
+		FROM  act_cio_rel a
+		LEFT JOIN act_cio_module u on u.id = a.cio_module_id
+		WHERE u.module_type = #{moduleType} AND a.start_user_id = #{startUserId}
+		ORDER by a.create_date DESC
+	</select>
+	<select id="getBusinessIdByProcInstId" resultType="java.lang.String">
+		SELECT a.business_id FROM act_cio_rel a WHERE a.process_instance_id = #{processInstanceId}
+	</select>
+</mapper>

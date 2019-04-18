@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ciocem.activiti.dao.ActCioModuleDao">
+
+	<sql id="actCioModuleColumns">
+		a.id AS "id",
+		a.module_key AS "moduleKey",
+		a.module_name AS "moduleName",
+		a.menu_id AS "menuId",
+		a.module_url AS "moduleUrl",
+		a.table_name AS "tableName",
+		a.class_name AS "className",
+		a.service_name AS "serviceName",
+		a.module_type AS "moduleType",
+		a.form_name_rules AS "formNameRules",
+		a.form_no_rules AS "formNoRules",
+		a.title_rules AS "titleRules",
+		a.counter AS "counter",
+		a.create_date AS "createDate",
+		a.create_by AS "createBy.id",
+		a.update_date AS "updateDate",
+		a.update_by AS "updateBy.id",
+		a.remarks AS "remarks"
+	</sql>
+
+
+	<select id="get" resultType="ActCioModule">
+		SELECT
+		<include refid="actCioModuleColumns" />
+		FROM act_cio_module a
+		WHERE a.id = #{id}
+	</select>
+
+	<insert id="insert">
+		INSERT INTO act_cio_module(
+		id,
+		module_key,
+		module_name,
+		menu_id,
+		module_url,
+		table_name,
+		class_name,
+		service_name,
+		module_type,
+		form_name_rules,
+		form_no_rules,
+		title_rules,
+		counter,
+		create_date,
+		create_by,
+		update_date,
+		update_by,
+		remarks
+		) VALUES (
+		#{id},
+		#{moduleKey},
+		#{moduleName},
+		#{menuId},
+		#{moduleUrl},
+		#{tableName},
+		#{className},
+		#{serviceName},
+		#{moduleType},
+		#{formNameRules},
+		#{formNoRules},
+		#{titleRules},
+		#{counter},
+		#{createDate},
+		#{createBy.id},
+		#{updateDate},
+		#{updateBy.id},
+		#{remarks}
+		)
+	</insert>
+
+	<update id="update">
+		UPDATE act_cio_module
+		SET
+		module_key = #{moduleKey},
+		module_name = #{moduleName},
+		menu_id = #{menuId},
+		module_url = #{moduleUrl},
+		table_name = #{tableName},
+		class_name = #{className},
+		service_name = #{serviceName},
+		module_type = #{moduleType},
+		form_name_rules = #{formNameRules},
+		form_no_rules = #{formNoRules},
+		title_rules = #{titleRules},
+		counter = #{counter},
+		update_date = #{updateDate},
+		update_by = #{updateBy.id},
+		remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+
+	<update id="delete">
+		DELETE FROM act_cio_module WHERE id = #{id};
+		DELETE FROM act_cio_model_module_rel WHERE cio_module_id=#{id};
+	</update>
+
+	<select id="findList" resultType="ActCioModule">
+		SELECT
+		<include refid="actCioModuleColumnsMore" />
+		<include refid="actCioModuleColumns" />
+		FROM act_cio_module a
+		<include refid="actCioModuleJoins" />
+		<where>
+
+		</where>
+	</select>
+
+	<select id="getVOById" resultType="com.ciocem.activiti.vo.ActCioModuleVO">
+		SELECT
+		<include refid="actCioModuleColumnsMore" />
+		<include refid="actCioModuleColumns" />
+		FROM act_cio_module a
+		<include refid="actCioModuleJoins" />
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findListByVO" resultType="com.ciocem.activiti.vo.ActCioModuleVO">
+		SELECT
+		<include refid="actCioModuleColumns" />
+		FROM act_cio_module a
+		<include refid="actCioModuleJoins" />
+		<where>
+			<include refid="actCioModuleWhere" />
+		</where>
+	</select>
+
+	<select id="getListByPage" resultType="com.ciocem.activiti.vo.ActCioModuleVO">
+		SELECT
+		<include refid="actCioModuleColumnsMore" />
+		<include refid="actCioModuleColumns" />
+		FROM
+		<choose>
+			<when test="entity.dbName == 'mssql'">
+				(select ROW_NUMBER() OVER( order by a.update_date desc) as 'rownum',
+				a.* from act_cio_module a
+				<include refid="actCioModuleJoins" />
+				<where>
+					<include refid="actCioModuleWhere" />
+				</where>
+				) a
+			</when>
+			<otherwise>
+				act_cio_module a
+			</otherwise>
+		</choose>
+		<include refid="actCioModuleJoins" />
+		<where>
+			<include refid="actCioModuleWhere" />
+			<if test="entity.dbName == 'mssql'">AND rownum between ${page.rowNumStart} and
+				${page.rowNumEnd}</if>
+		</where>
+		<if test="entity.dbName == 'mysql'">LIMIT ${page.recordStart},${page.pageSize}</if>
+	</select>
+
+	<select id="getTotalByPage" parameterType="java.util.Map"
+		resultType="java.lang.Integer">
+		SELECT
+		COUNT(1)
+		FROM act_cio_module a
+		<include refid="actCioModuleJoins" />
+		<where>
+			<include refid="actCioModuleWhere" />
+		</where>
+	</select>
+
+	<sql id="actCioModuleColumnsMore">
+		m.name as "menuName",
+	</sql>
+	<sql id="actCioModuleJoins">
+		LEFT JOIN sys_menu m on m.id = a.menu_id
+	</sql>
+	<sql id="actCioModuleWhere">
+		<if test="entity.menuId != null and entity.menuId != ''">
+			AND a.menu_id = #{entity.menuId}
+		</if>
+		<if test="entity.eqModuleKey != null and entity.eqModuleKey != ''">
+			AND a.module_key = #{entity.eqModuleKey}
+		</if>
+		<if test="entity.className != null and entity.className != ''">
+			AND a.class_name = #{entity.className}
+		</if>
+		<if test="entity.menuId != null and entity.menuId != ''">
+			AND a.menu_id = #{entity.menuId}
+		</if>
+		<if test="entity.moduleKey != null and entity.moduleKey != ''">
+			AND a.module_key like
+			<if test="entity.dbName == 'oracle'">'%'||#{entity.moduleKey}||'%'</if>
+			<if test="entity.dbName == 'mssql'">'%'+#{entity.moduleKey}+'%'</if>
+			<if test="entity.dbName == 'mysql'">concat('%',#{entity.moduleKey},'%')</if>
+		</if>
+		<if test="entity.moduleName != null and entity.moduleName != ''">
+			AND a.module_name like
+			<if test="entity.dbName == 'oracle'">'%'||#{entity.moduleName}||'%'</if>
+			<if test="entity.dbName == 'mssql'">'%'+#{entity.moduleName}+'%'</if>
+			<if test="entity.dbName == 'mysql'">concat('%',#{entity.moduleName},'%')</if>
+		</if>
+		<if test="entity.moduleUrl != null and entity.moduleUrl != ''">
+			AND a.module_url like
+			<if test="entity.dbName == 'oracle'">'%'||#{entity.moduleUrl}||'%'</if>
+			<if test="entity.dbName == 'mssql'">'%'+#{entity.moduleUrl}+'%'</if>
+			<if test="entity.dbName == 'mysql'">concat('%',#{entity.moduleUrl},'%')</if>
+		</if>
+		<if test="entity.menuName != null and entity.menuName != ''">
+			AND m.name like
+			<if test="entity.dbName == 'oracle'">'%'||#{entity.menuName}||'%'</if>
+			<if test="entity.dbName == 'mssql'">'%'+#{entity.menuName}+'%'</if>
+			<if test="entity.dbName == 'mysql'">concat('%',#{entity.menuName},'%')</if>
+		</if>
+		<if test="entity.moduleType != null and entity.moduleType != ''">
+			AND a.module_type = #{entity.moduleType}
+		</if>
+		<if test="entity.keyword != null and entity.keyword != ''">
+			AND (a.module_key LIKE
+			<if test="entity.dbName == 'oracle'">'%'||#{entity.keyword}||'%'</if>
+			<if test="entity.dbName == 'mssql'">'%'+#{entity.keyword}+'%'</if>
+			<if test="entity.dbName == 'mysql'">concat('%',#{entity.keyword},'%')</if>
+			OR a.module_name LIKE
+			<if test="entity.dbName == 'oracle'">'%'||#{entity.keyword}||'%'</if>
+			<if test="entity.dbName == 'mssql'">'%'+#{entity.keyword}+'%'</if>
+			<if test="entity.dbName == 'mysql'">concat('%',#{entity.keyword},'%')</if>
+			OR a.module_url LIKE
+			<if test="entity.dbName == 'oracle'">'%'||#{entity.keyword}||'%'</if>
+			<if test="entity.dbName == 'mssql'">'%'+#{entity.keyword}+'%'</if>
+			<if test="entity.dbName == 'mysql'">concat('%',#{entity.keyword},'%')</if>
+			)
+		</if>
+	</sql>
+	<select id="getActCioModule4App" resultType="com.ciocem.activiti.vo.ActCioModule4AppVO">
+		SELECT a.module_type AS moduleType, a.module_key AS moduleKey, a.module_name
+		AS moduleName FROM
+		<choose>
+			<when test="entity.dbName == 'mssql'">
+				(select ROW_NUMBER() OVER( order by a.module_type,a.module_name) as 'rownum',
+				a.module_type,a.module_key,a.module_name from act_cio_module a				
+				<where>
+					<include refid="actCioModuleWhere4App" />
+				</where>
+				) a
+			</when>
+			<otherwise>
+				act_cio_module a
+			</otherwise>
+		</choose>		
+		<where>
+			<include refid="actCioModuleWhere4App" />
+			<if test="entity.dbName == 'mssql'">AND rownum between ${page.rowNumStart} and
+				${page.rowNumEnd}</if>
+		</where>
+		<if test="entity.dbName == 'mysql'">LIMIT ${page.recordStart},${page.pageSize}</if>		
+	</select>
+	<sql id="actCioModuleWhere4App">
+		<if test="entity.moduleType != null and entity.moduleType !=''">
+			and a.module_type=#{entity.moduleType}
+		</if>
+		<if test="entity.keyword != null and entity.keyword !=''">
+			<bind name="keyword" value="'%'+entity.keyword + '%'" />
+			and (a.module_key like #{keyword} or a.module_name like #{keyword})
+		</if>
+	</sql>
+	<select id="getTotalByPage4App" parameterType="java.util.Map"
+		resultType="java.lang.Integer">
+		SELECT
+		COUNT(1)
+		FROM act_cio_module a		
+		<where>
+			<include refid="actCioModuleWhere4App" />
+		</where>
+	</select>
+</mapper>

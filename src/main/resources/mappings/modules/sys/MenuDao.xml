@@ -1,0 +1,397 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ciocem.modules.sys.dao.MenuDao">	
+	<sql id="menuColumns">
+		a.id AS "id",
+		a.parent_id AS "parentId",
+		a.parent_ids AS "parentIds",
+		a.menu_no AS "menuNo",
+		a.name AS "name",
+		a.alias_name AS "aliasName",
+		a.level_num AS "levelNum",
+		a.type AS "type",
+		a.sort AS "sort",
+		a.href AS "href",
+		a.target AS "target",
+		a.icon AS "icon",
+		a.is_show AS "isShow",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.right_id AS "rightId",
+		a.permission AS "permission",
+		a.module_no AS "moduleNo",
+		a.group_no AS "groupNo",
+		a.remarks AS "remarks"
+	</sql>
+	
+	<select id="get"  resultType="Menu">
+		SELECT
+			<include refid="menuColumns"/>
+		FROM sys_menu a
+		<include refid="menuJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	<select id="findUniqueByProperty"  resultType="Menu" statementType="STATEMENT">
+		select * from sys_menu where ${propertyName} = ${value}
+	</select>
+	
+	<select id="getChildren" parameterType="String" resultType="Menu">  
+        select * from sys_menu where parent_id = #{id} ORDER BY sort 
+    </select>
+
+    <select id="getParent" parameterType="String" resultType="Menu">
+        select * from sys_menu where id = #{id}  
+    </select>	
+	<select id="findList" resultType="Menu" >
+		SELECT 
+			<include refid="menuColumns"/>
+		FROM sys_menu a
+		<where>
+		
+		</where>
+		ORDER BY a.sort
+	</select>
+	
+	<select id="findByParentIdsLike"  resultType="Menu">
+		SELECT
+			<include refid="menuColumns"/>
+		FROM sys_menu a
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL} AND 
+		a.parent_ids LIKE 
+		<if test="dbName == 'oracle'">'%'||#{parentIds}||'%'</if>
+		<if test="dbName == 'mssql'">'%'+#{parentIds}+'%'</if>
+		<if test="dbName == 'mysql'">concat('%',#{parentIds},'%')</if>
+		ORDER BY a.sort
+	</select>
+	
+	<select id="findByUserId"   resultType="Menu">
+		SELECT DISTINCT
+			<include refid="menuColumns"/>
+		FROM sys_menu a
+		<!-- LEFT JOIN sys_menu p ON p.id = a.parent_id
+		JOIN sys_role_menu rm ON rm.menu_id = a.id
+		JOIN sys_role r ON r.id = rm.role_id AND r.useable='1'
+		JOIN sys_role_user ur ON ur.role_id = r.id
+		JOIN sys_user u ON u.id = ur.user_id AND u.id = #{userId}
+		WHERE 1=1 -->
+		ORDER BY a.sort
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sys_menu(
+			id, 
+			parent_id, 
+			parent_ids, 
+			name,
+			menu_no,
+			group_no,
+		    alias_name,
+			type,
+			level_num,
+			href,
+			target, 
+			icon, 
+			sort, 
+			is_show, 
+			permission, 
+			create_by, 
+			create_date, 
+			update_by, 
+			update_date, 
+			remarks, 
+			del_flag
+		) VALUES (
+			#{id}, 
+			#{parentId},
+			#{parentIds}, 
+			#{name},
+			#{menuNo},
+			#{groupNo},
+			#{aliasName},
+			#{type},
+			#{levelNum},
+			#{href},
+			#{target}, 
+			#{icon}, 
+			#{sort}, 
+			#{isShow}, 
+			#{permission}, 
+			#{createBy.id}, 
+			#{createDate}, 
+			#{updateBy.id}, 
+			#{updateDate}, 
+			#{remarks}, 
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE sys_menu SET 
+			parent_id = #{parentId},
+			parent_ids = #{parentIds}, 
+			name = #{name},
+			menu_no = #{menuNo},
+			group_no = #{groupNo},
+			alias_name = #{aliasName},
+			type = #{type},
+			level_num = #{levelNum},
+			href = #{href},
+			target = #{target}, 
+			icon = #{icon}, 
+			sort = #{sort}, 
+			is_show = #{isShow}, 
+			permission = #{permission}, 
+			update_by = #{updateBy.id}, 
+			update_date = #{updateDate}, 
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM sys_menu WHERE id = #{id};		
+	</update>
+
+	<select id="getVOById" resultType="com.ciocem.modules.sys.vo.MenuVO" >
+		SELECT
+		<include refid="menuColumnsMore"/>
+		<include refid="menuColumns"/>
+		FROM sys_menu a
+		<include refid="menuJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findListByVO" resultType="com.ciocem.modules.sys.vo.MenuVO" >
+		SELECT
+		<include refid="menuColumns"/>
+		FROM sys_menu a
+		<include refid="menuJoins"/>
+		<where>
+			<include refid="menuWhere"/>
+		</where>
+	</select>
+
+	<select id="getListByPage" resultType="com.ciocem.modules.sys.vo.MenuVO" >
+		SELECT		
+		<choose>
+			<when test="entity.dbName == 'mssql'">
+				* FROM
+				(select ROW_NUMBER() OVER( order by a.sort asc) as 'rownum', 
+				<include refid="menuColumnsMore"/> 
+				<include refid="menuColumns"/>
+				from sys_menu1 a
+				<include refid="menuJoins"/>
+				<where>
+				 	 <include refid="menuWhere"/> 
+				</where>
+				) a
+			</when>
+			<otherwise>
+				<include refid="menuColumnsMore"/> 
+				<include refid="menuColumns"/>
+				FROM sys_menu1 a
+				<include refid="menuJoins"/>
+				<include refid="menuWhere"/>  
+			</otherwise>
+		</choose>		
+		<where>			 
+			<if test="entity.dbName == 'mssql'">AND rownum between ${page.rowNumStart}  and ${page.rowNumEnd}</if>
+		</where>
+		<if test="entity.dbName == 'mysql'">LIMIT ${page.recordStart},${page.pageSize}</if>
+	</select>
+
+	<select id="getTotalByPage" parameterType="java.util.Map" resultType="java.lang.Integer">
+		SELECT
+		COUNT(1)
+		FROM sys_menu a
+		<include refid="menuJoins"/>
+		<where>
+			<include refid="menuWhere"/>
+		</where>
+	</select>
+
+	<sql id="menuColumnsMore">
+		b.name as "parentName",
+	</sql>
+	<sql id="menuJoins">
+		join sys_menu b on a.parent_id=b.id
+	</sql>
+	<sql id="menuWhere">
+		<if test = "entity.permission != null and entity.permission !=''">
+			AND a.permission LIKE
+			<if test="entity.dbName == 'oracle'">'%'||#{entity.permission}||'%'</if>
+			<if test="entity.dbName == 'mssql'">'%'+#{entity.permission}+'%'</if>
+			<if test="entity.dbName == 'mysql'">concat('%',#{entity.permission},'%')</if>
+		</if>
+		<if test = "entity.parentId != null and entity.parentId !=''">
+			AND a.parent_id = #{entity.parentId}
+		</if>
+	</sql>
+
+
+
+	<select id="findUserMenus"  resultType="Menu">
+		SELECT DISTINCT
+		<include refid="menuColumns"/>
+		FROM sys_menu a
+		LEFT JOIN
+		(SELECT right_id FROM sys_user_permission WHERE org_id=#{orgId} AND user_id=#{userId}) b
+		ON a.id=b.right_id
+		WHERE a.is_show='1' AND
+		(b.right_id IS NOT NULL OR exists(SELECT 1 FROM sys_user WHERE is_sys='1' AND id=#{userId}))
+		<!--LEFT JOIN sys_menu p ON p.id = a.parent_id     AND a.group_no=#{groupNo}
+	    JOIN sys_role_menu rm ON rm.menu_id = a.id
+		JOIN sys_role r ON r.id = rm.role_id AND r.useable='1'
+		JOIN sys_role_user ur ON ur.role_id = r.id
+		JOIN sys_user u ON u.id = ur.user_id AND u.id = #{userId} 
+		WHERE a.level_num = #{levelNum}
+		<if test="parentId != null and parentId != ''">
+			AND a.parent_id = #{parentId}
+		</if>-->
+		ORDER BY a.level_num, a.sort
+	</select>
+
+	<select id="searchUserMenus"  resultType="Menu">
+		WITH getOrgParent(id,
+		parent_id,
+		href,
+		name,
+		is_show,
+		level_num,
+		menu_no
+		) as (
+		SELECT
+		a.id AS "id",
+		a.parent_id AS "parentId",
+		a.href AS "href",
+		a.name AS "name",
+		a.is_show AS "isShow",
+		a.level_num AS "levelNum",
+		a.menu_no
+		FROM sys_menu a
+		LEFT JOIN
+		(SELECT right_id FROM sys_user_permission WHERE org_id=#{orgId} AND user_id=#{userId}) b
+		ON a.id=b.right_id
+		<where>
+			a.is_show='1'
+			AND
+			(b.right_id IS NOT NULL OR exists(SELECT 1 FROM sys_user WHERE is_sys='1' AND id=#{userId}))
+			AND a.level_num = '3'
+			<if test = "name != null and name!=''">
+				<bind name="name" value="'%' + name +'%'"/>
+				AND a.name like #{name}
+			</if>
+		</where>
+		UNION ALL
+		SELECT
+		m1.id AS "id",
+		m1.parent_id AS "parentId",
+		m1.href AS "href",
+		m1.name AS "name",
+		m1.is_show AS "isShow",
+		m1.level_num AS "levelNum",
+		m1.menu_no
+		FROM sys_menu m1,getOrgParent
+		<where>
+			m1.id = getOrgParent.parent_id
+		</where>
+		)
+		SELECT DISTINCT * FROM getOrgParent;
+	</select>
+
+	<select id="getMenu4Log" resultType="com.ciocem.modules.sys.vo.Menu4LogVO">
+		SELECT id, name, parent_id AS parentId, href, permission  FROM sys_menu WHERE is_show='1' AND parent_id !='-1'
+	</select>
+
+
+	<select id="getMenuParent" resultType="Menu">
+
+
+		<choose>
+			<when test="dbName == 'mssql'">
+				WITH getMenuParent(id,name,parent_id,level_num) as (
+				SELECT id,name,parent_id,level_num
+				FROM sys_menu
+				WHERE id = #{menuId}
+				UNION ALL
+				SELECT o1.id,o1.name,o1.parent_id,o1.level_num
+				FROM sys_menu o1,getMenuParent
+				WHERE o1.id = getMenuParent.parent_id
+				)
+				SELECT * FROM getMenuParent WHERE level_num>=0 order by level_num asc;
+			</when>
+			<otherwise>
+				SELECT id,name,parent_id,level_num FROM sys_menu
+				WHERE  FIND_IN_SET(id, getMenuParentLs(#{menuId})) and level_num>=0 ;
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="getSubMenuLs" resultType="Menu">
+		<choose>
+			<when test="dbName != null and dbName == 'mysql'.toString()">
+
+				<choose>
+					<when test="id != null and id != ''">
+						SELECT * FROM sys_menu WHERE id IN (
+						SELECT id FROM sys_menu  WHERE  FIND_IN_SET(id, getSubMenuLs(#{id}))
+						)
+					</when>
+					<otherwise>
+						SELECT * FROM sys_menu WHERE id IN (
+						SELECT id FROM sys_menu  WHERE  FIND_IN_SET(id, getSubMenuLs('1'))
+						)
+					</otherwise>
+				</choose>
+
+			</when>
+			<otherwise>
+				WITH getMenuChild(id,parent_id,is_show) as (
+				SELECT id,parent_id,is_show
+				FROM sys_menu
+				<where>
+					<choose>
+						<when test="id != null and id != ''">
+							AND id = #{id}
+						</when>
+						<otherwise>
+							AND id = '1'
+						</otherwise>
+					</choose>
+				</where>
+				UNION ALL
+				SELECT s1.id,s1.parent_id,s1.is_show
+				FROM sys_menu s1,getMenuChild
+				<where>
+					s1.id = getMenuChild.parent_id
+				</where>
+				)
+				SELECT * FROM getMenuChild ORDER by id;
+			</otherwise>
+		</choose>
+	</select>
+	<!--
+
+DELIMITER $$
+
+CREATE FUNCTION `getMenuParentLs`(rootId varchar(1000))
+RETURNS varchar(1000)
+BEGIN
+DECLARE sParentList varchar(1000);
+DECLARE sParentTemp varchar(1000);
+SET sParentTemp =cast(rootId as CHAR);
+WHILE sParentTemp is not null DO
+IF (sParentList is not null) THEN
+SET sParentList = concat(sParentTemp,',',sParentList);
+ELSE
+SET sParentList = concat(sParentTemp);
+END IF;
+SELECT group_concat(parent_id) INTO sParentTemp FROM sys_menu where FIND_IN_SET(id,sParentTemp)>0;
+END WHILE;
+RETURN sParentList;
+END$$
+
+DELIMITER ;
+-->
+</mapper>

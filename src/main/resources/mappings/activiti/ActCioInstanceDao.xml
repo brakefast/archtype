@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ciocem.activiti.dao.ActCioInstanceDao">
+
+	<!--数据库创建视图-->
+	<select id="instanceView">
+		CREATE VIEW V_ACT_INSTANCE AS
+		SELECT
+			 A.PROC_DEF_ID_ AS PROC_DEF_ID,
+			 A.START_TIME_ AS START_TIME,
+			 A.END_TIME_ AS END_TIME,
+			 A.START_USER_ID_ AS START_USER_ID,
+			 R.*
+		FROM ACT_HI_PROCINST A
+		LEFT JOIN  (SELECT
+			 r.id,r.form_no,r.form_name,r.process_instance_id,r.cio_model_id,r.cio_module_id,r.business_id,
+			 m.model_name,u.module_key,
+			 u.module_name,u.module_url,usr.name as 'applyUserName',u.menu_id
+		FROM ACT_CIO_REL r
+		LEFT JOIN ACT_CIO_MODEL m ON m.id = r.cio_model_id
+		LEFT JOIN ACT_CIO_MODULE u ON u.id = r.cio_module_id
+		LEFT JOIN sys_user usr on usr.id = r.start_user_id
+		) R
+		ON A.PROC_INST_ID_ = R.process_instance_id
+	</select>
+
+	<select id="getListByPage" resultType="com.ciocem.activiti.vo.ActCioInstanceVO" >
+		SELECT
+		<choose>
+			<when test="entity.dbName == 'mssql'">
+				* FROM
+				(select ROW_NUMBER() OVER( order by a.START_TIME desc) as 'rownum',
+				a.*
+				from V_ACT_INSTANCE a
+				<where>
+					<include refid="actCioInstanceWhere"/>
+				</where>
+				) a
+			</when>
+			<otherwise>
+				* FROM V_ACT_INSTANCE a
+				<where>
+					<include refid="actCioInstanceWhere"/>
+				</where>
+			</otherwise>
+		</choose>
+		<where>
+			<if test="entity.dbName == 'mssql'">AND rownum between ${page.rowNumStart}  and ${page.rowNumEnd}</if>
+		</where>
+		<if test="entity.dbName == 'mysql'">LIMIT ${page.recordStart},${page.pageSize}</if>
+	</select>
+
+	<select id="getTotalByPage" parameterType="java.util.Map" resultType="java.lang.Integer">
+		SELECT COUNT(1) FROM V_ACT_INSTANCE a
+		<where>
+			 <include refid="actCioInstanceWhere"/>
+		</where>
+	</select>
+
+	<sql id="actCioInstanceWhere">
+		<if test ="entity.isFinish != null and entity.isFinish != ''">
+			AND a.end_time IS NOT NULL
+		</if>
+		<if test ="entity.unFinish != null and entity.unFinish != ''">
+			AND a.end_time IS NULL
+		</if>
+		<if test ="entity.moduleKey != null and entity.moduleKey != ''">
+			AND a.module_key = #{entity.moduleKey}
+		</if>
+		<if test ="entity.menuId != null and entity.menuId != ''">
+			AND a.menu_id = #{entity.menuId}
+		</if>
+		<if test="entity.menuIdLs != null and entity.menuIdLs != ''">
+			AND a.menu_id  IN
+			<foreach collection="entity.menuIdLs" index="index" item="menuId" open="("
+					 separator="," close=")">
+				#{menuId}
+			</foreach>
+		</if>
+		<if test ="entity.moduleName != null and entity.moduleName != ''">
+			AND a.module_name LIKE
+			<if test="entity.dbName == 'oracle'">'%'||#{entity.moduleName}||'%'</if>
+			<if test="entity.dbName == 'mssql'">'%'+#{entity.moduleName}+'%'</if>
+			<if test="entity.dbName == 'mysql'">concat('%',#{entity.moduleName},'%')</if>
+		</if>
+		<if test ="entity.formNo != null and entity.formNo != ''">
+			AND a.form_no LIKE
+			<if test="entity.dbName == 'oracle'">'%'||#{entity.formNo}||'%'</if>
+			<if test="entity.dbName == 'mssql'">'%'+#{entity.formNo}+'%'</if>
+			<if test="entity.dbName == 'mysql'">concat('%',#{entity.formNo},'%')</if>
+		</if>
+		<if test ="entity.formName != null and entity.formName != ''">
+			AND a.form_name LIKE
+			<if test="entity.dbName == 'oracle'">'%'||#{entity.formName}||'%'</if>
+			<if test="entity.dbName == 'mssql'">'%'+#{entity.formName}+'%'</if>
+			<if test="entity.dbName == 'mysql'">concat('%',#{entity.formName},'%')</if>
+		</if>
+		<if test ="entity.applyUserName != null and entity.applyUserName != ''">
+			AND a.applyUserName LIKE
+			<if test="entity.dbName == 'oracle'">'%'||#{entity.applyUserName}||'%'</if>
+			<if test="entity.dbName == 'mssql'">'%'+#{entity.applyUserName}+'%'</if>
+			<if test="entity.dbName == 'mysql'">concat('%',#{entity.applyUserName},'%')</if>
+		</if>
+		<if test ="entity.modelName != null and entity.modelName != ''">
+			AND a.model_name LIKE
+			<if test="entity.dbName == 'oracle'">'%'||#{entity.modelName}||'%'</if>
+			<if test="entity.dbName == 'mssql'">'%'+#{entity.modelName}+'%'</if>
+			<if test="entity.dbName == 'mysql'">concat('%',#{entity.modelName},'%')</if>
+		</if>
+	</sql>
+
+	<select id="getCommentListByProcInstId" resultType="com.ciocem.activiti.vo.ActCioCommentVO" >
+		SELECT
+			A.ID_ AS 'commentId',
+			A.PROC_INST_ID_ AS 'procInstId',
+			A.USER_ID_ AS 'userName',
+			A.TYPE_ AS 'type',
+			A.TASK_ID_ AS 'taskId',
+			A.MESSAGE_ AS 'comments',
+			A.MESSAGE_ AS 'fullComments',
+			A.TIME_ AS 'createDate',
+			B.act_name AS 'actName',
+			C.START_TIME_ AS 'startDate',
+			C.END_TIME_ AS 'endDate',
+			B.act_id AS 'activityId',
+			U.head_imgurl AS 'headImgId'
+		FROM ACT_HI_COMMENT A
+		LEFT JOIN (SELECT DISTINCT(Task_ID_) as task_id,ACT_NAME_ as act_name,ACT_ID_ as act_id from ACT_HI_ACTINST ) B on A.TASK_ID_ = B.task_id
+		LEFT JOIN ACT_HI_ACTINST C ON C.TASK_ID_ = A.TASK_ID_
+		LEFT JOIN sys_user U ON C.ASSIGNEE_=U.id
+		WHERE A.PROC_INST_ID_ = #{procInstId}
+		ORDER BY A.TIME_ DESC
+	</select>
+
+	<select id="getAssigneeLsByProcInstId" resultType="java.lang.String" >
+		select DISTINCT(ASSIGNEE_) from ACT_HI_ACTINST where 1=1 and ACT_TYPE_='userTask' and PROC_INST_ID_=#{procInstId} order by ASSIGNEE_
+	</select>
+
+	<select id="getCommentLs" resultType="java.lang.String" >
+		<bind name="id" value="'%' + resourceId +'%'"/>
+		SELECT MESSAGE_
+		FROM ACT_HI_COMMENT
+		WHERE MESSAGE_ LIKE '%${id}%';
+	</select>
+
+
+	<select id="getDoneActCioInstVOLs" resultType="com.ciocem.activiti.vo.ActCioInstVO" >
+		SELECT
+			ID_ as 'id',
+			ACT_NAME_ as 'actName',
+			ACT_TYPE_ as 'actType',
+			START_TIME_ as 'startTime',
+			END_TIME_ as 'endTime',
+			PROC_INST_ID_ as 'procInstId',
+			PROC_DEF_ID_ as 'procDefId',
+			ACT_ID_ as 'actId',
+			TASK_ID_ as 'taskId',
+			ASSIGNEE_ as 'assignee'
+		FROM ACT_HI_ACTINST
+		WHERE ASSIGNEE_= #{assignee}
+		AND PROC_INST_ID_= #{procInstId}
+		AND END_TIME_ is not null ORDER BY END_TIME_ DESC
+	</select>
+
+	<select id="getCountersignTaskList" resultType="com.ciocem.activiti.vo.ActCioInstVO" >
+		SELECT
+			ID_ as 'id',
+			NAME_ as 'actName',
+			DESCRIPTION_ as 'description',
+			EXECUTION_ID_ as 'executionId'
+		FROM ACT_RU_TASK
+		<where>
+			<if test = "description != null and description!=''">
+				<bind name="description" value="'%'+description+'%'"/>
+				AND DESCRIPTION_ LIKE #{description}
+			</if>
+			<if test ="taskId != null and taskId != ''">
+				AND ID_=#{taskId};
+			</if>
+		</where>
+	</select>
+
+
+	<select id="openCountersignTask" resultType="com.ciocem.activiti.vo.ActCioInstVO" >
+		UPDATE ACT_RU_TASK SET CIO_ASSIGNEE_ = ASSIGNEE_ WHERE ID_ =#{taskId};
+		UPDATE ACT_RU_TASK SET ASSIGNEE_ = '' WHERE ID_ =#{taskId};
+	</select>
+
+	<select id="closeCountersignTask" resultType="com.ciocem.activiti.vo.ActCioInstVO" >
+		UPDATE ACT_RU_TASK SET ASSIGNEE_ = CIO_ASSIGNEE_ WHERE ID_ =#{taskId};
+	</select>
+
+	<select id="deleteCountersignTask" resultType="com.ciocem.activiti.vo.ActCioInstVO" >
+	 	DELETE FROM ACT_RU_TASK WHERE ID_=#{taskId};
+  		DELETE FROM ACT_RU_EXECUTION WHERE ID_ =#{executionId};
+	</select>
+
+	<select id="updateHiComment" resultType="com.ciocem.activiti.vo.ActCioInstVO" >
+		UPDATE ACT_HI_COMMENT
+		SET CIO_SIGNATURE_ID_ = #{cioSignatureId},CIO_TYPE_=#{cioType},CIO_REMARK_=#{cioRemark}
+		WHERE ID_ =#{id};
+	</select>
+
+	<select id="updateRuTaskAssignee" resultType="com.ciocem.activiti.vo.ActCioInstVO" >
+		UPDATE ACT_RU_TASK SET ASSIGNEE_ = #{userId} WHERE ID_ =#{taskId};
+	</select>
+
+
+	<select id="getHisTaskInfo" resultType="com.ciocem.activiti.vo.ActCioHisTaskVO" >
+		SELECT
+			ACT_NAME_ as taskName,
+			ASSIGNEE_  as assignee
+		FROM ACT_HI_ACTINST
+		WHERE
+			ACT_ID_=#{resourceId}
+		AND PROC_INST_ID_=#{procInstId}
+	</select>
+
+
+	<select id="getRunTaskInfo" resultType="com.ciocem.activiti.vo.ActCioShowTaskVO" >
+		SELECT
+			ID_ as 'taskId',
+			ASSIGNEE_  as 'assignee',
+			NAME_ as 'taskName',
+			TASK_DEF_KEY_ as 'activityId'
+		FROM ACT_RU_TASK
+		WHERE
+		   PROC_INST_ID_=#{procInstId}
+	</select>
+
+</mapper>

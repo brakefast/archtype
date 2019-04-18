@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ciocem.modules.sys.dao.PermissionDao">
+    
+	<sql id="permissionColumns">
+		a.id AS "id",
+		a.bustype AS "bustype",
+		a.right_id AS "rightId",
+		a.busid AS "busid",
+		a.org_id AS "orgId"
+	</sql>
+	
+    
+	<select id="get" resultType="Permission" >
+		SELECT 
+			<include refid="permissionColumns"/>
+		FROM sys_permission a
+		WHERE a.id = #{id}
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sys_permission(
+			id,
+			bustype,
+			right_id,
+			busid,
+			org_id
+		) VALUES (
+			#{id},
+			#{bustype},
+			#{rightId},
+			#{busid},
+			#{orgId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE sys_permission
+		SET 	
+			bustype = #{bustype},
+			right_id = #{rightId},
+			busid = #{busid},
+			org_id = #{orgId}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM sys_permission
+		WHERE id = #{id}
+	</update>
+	
+	<select id="findList" resultType="Permission" >
+		SELECT 
+			<include refid="permissionColumns"/>
+		FROM sys_permission a
+		<where>
+		
+		</where>
+	</select>
+	
+	<select id="getVOById" resultType="com.ciocem.modules.sys.vo.PermissionVO" >
+		SELECT 
+			<include refid="permissionColumnsMore"/> 
+			<include refid="permissionColumns"/>
+		FROM sys_permission a
+			<include refid="permissionJoins"/> 
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findListByVO" resultType="com.ciocem.modules.sys.vo.PermissionVO" >
+		SELECT 
+		    <include refid="permissionColumnsMore"/> 
+			<include refid="permissionColumns"/>
+		FROM sys_permission a
+			<include refid="permissionJoins"/> 
+		<where>
+			<include refid="permissionWhere"/>
+		</where>
+	</select>
+	
+	<select id="getListByPage" resultType="com.ciocem.modules.sys.vo.PermissionVO" >
+		SELECT		
+		<choose>
+			<when test="entity.dbName == 'mssql'">
+				* FROM
+				(select ROW_NUMBER() OVER( order by a.id desc) as 'rownum', 
+				<include refid="permissionColumnsMore"/> 
+				<include refid="permissionColumns"/>
+				from sys_permission a
+				<include refid="permissionJoins"/>
+				<where>
+				 	 <include refid="permissionWhere"/> 
+				</where>
+				) a
+			</when>
+			<otherwise>
+				<include refid="permissionColumnsMore"/> 
+				<include refid="permissionColumns"/>
+				FROM sys_permission a
+				<include refid="permissionJoins"/>
+				<include refid="permissionWhere"/>  
+			</otherwise>
+		</choose>		
+		<where>			 
+			<if test="entity.dbName == 'mssql'">AND rownum between ${page.rowNumStart}  and ${page.rowNumEnd}</if>
+		</where>
+		<if test="entity.dbName == 'mysql'">LIMIT ${page.recordStart},${page.pageSize}</if>
+	</select>
+
+	<select id="getTotalByPage" parameterType="java.util.Map" resultType="java.lang.Integer">
+		SELECT
+		COUNT(1)
+		FROM sys_permission a
+		<include refid="permissionJoins"/> 
+		<where>
+			 <include refid="permissionWhere"/> 
+		</where>
+	</select>
+	 <insert id="saveRights">
+		INSERT INTO sys_permission(id,bustype,right_id,busid,org_id) VALUES 
+		<foreach collection="rights" item="item" index="index" separator =",">						
+			(
+			#{item.id},
+			#{item.bustype},
+			#{item.rightId},
+			#{item.busid},
+			#{item.orgId}
+			)
+		</foreach>
+		
+	</insert>
+    <sql id="permissionColumnsMore"></sql>
+	<sql id="permissionJoins"></sql>
+	<sql id="permissionWhere"></sql>
+	<delete id="deleteByOther">			
+		<foreach collection="rightIds" index="index" item="idList" separator=";" > 
+		   DELETE FROM sys_permission WHERE bustype=#{busType} AND busid=#{busId} AND org_id=#{orgId} AND right_id IN 
+           <foreach collection="idList" index="index" item="id" open="(" separator="," close=")">  
+                #{id}  
+           </foreach>   
+        </foreach>
+	</delete>
+	<delete id="deleteByEach">
+		DELETE FROM sys_permission WHERE bustype=#{busType} AND busid=#{busId} AND org_id=#{orgId} AND right_id IN
+		<foreach collection="rightIds" item="item" separator="," open="(" close=")" index="" > 
+			#{item}
+		</foreach>
+	</delete>
+	<select id="getPermission4User2Add" resultType="com.ciocem.modules.sys.vo.RightInfoVO">
+		SELECT a.right_id AS rightId,sys_menu.permission FROM
+		(
+			SELECT DISTINCT right_id FROM (
+				SELECT right_id FROM sys_permission WHERE org_id=#{entity.orgId} AND bustype='1' AND busid=#{entity.userId}
+				UNION
+				SELECT right_id FROM sys_permission WHERE org_id=#{entity.orgId} AND bustype='2' AND (busid IN (SELECT role_id FROM sys_role_user WHERE org_id=#{entity.orgId} AND user_id=#{entity.userId})
+					OR busid IN (
+						SELECT role_id FROM hr_station_info WHERE id IN (
+							SELECT station_info_id  FROM hr_employee_files WHERE id IN (
+								SELECT employee_files_id FROM sys_user WHERE id=#{entity.userId}
+							)
+						) AND role_id IS NOT NULL AND role_id!='' AND status='0'
+					)
+				)
+			) right_tab WHERE NOT EXISTS(SELECT 1 FROM sys_user_permission WHERE org_id=#{entity.orgId} AND user_id=#{entity.userId} AND right_id=right_tab.right_id)
+		) a JOIN sys_menu ON a.right_id=sys_menu.id
+	</select>
+	<select id="findAllRight" resultType="com.ciocem.modules.sys.vo.RightPermissionVO">		
+		SELECT href AS permissionUrl,permission FROM sys_menu WHERE is_show='1' AND href!='0' AND permission IS NOT NULL AND permission!=''		
+	</select>	
+</mapper>

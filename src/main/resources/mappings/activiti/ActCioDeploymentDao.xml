@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ciocem.activiti.dao.ActCioDeploymentDao">
+    
+	<sql id="actCioDeploymentColumns">
+		a.id AS "id",
+		a.deployment_id AS "deploymentId",
+		a.resource_id AS "resourceId",
+		a.resource_type AS "resourceType",
+		a.type AS "type",
+		a.pro_name AS "proName",
+		a.pro_type AS "proType",
+		a.pro_value AS "proValue",
+		a.create_date AS "createDate",
+		a.create_by AS "createBy.id",
+		a.update_date AS "updateDate",
+		a.update_by AS "updateBy.id",
+		a.remarks AS "remarks"
+	</sql>
+	
+    
+	<select id="get" resultType="ActCioDeployment" >
+		SELECT 
+			<include refid="actCioDeploymentColumns"/>
+		FROM act_cio_deployment a
+		WHERE a.id = #{id}
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO act_cio_deployment(
+			id,
+			deployment_id,
+			resource_id,
+			resource_type,
+			type,
+			pro_name,
+			pro_type,
+			pro_value,
+			create_date,
+			create_by,
+			update_date,
+			update_by,
+			remarks
+		) VALUES (
+			#{id},
+			#{deploymentId},
+			#{resourceId},
+			#{resourceType},
+			#{type},
+			#{proName},
+			#{proType},
+			#{proValue},
+			#{createDate},
+			#{createBy.id},
+			#{updateDate},
+			#{updateBy.id},
+			#{remarks}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE act_cio_deployment
+		SET 	
+			deployment_id = #{deploymentId},
+			resource_id = #{resourceId},
+			resource_type = #{resourceType},
+			type = #{type},
+			pro_name = #{proName},
+			pro_type = #{proType},
+			pro_value = #{proValue},
+			update_date = #{updateDate},
+			update_by = #{updateBy.id},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM act_cio_deployment
+		WHERE id = #{id}
+	</update>
+	
+	<select id="findList" resultType="ActCioDeployment" >
+		SELECT 
+			<include refid="actCioDeploymentColumns"/>
+		FROM act_cio_deployment a
+		<where>
+		
+		</where>
+	</select>
+	
+	<select id="getVOById" resultType="com.ciocem.activiti.vo.ActCioDeploymentVO" >
+		SELECT 
+			<include refid="actCioDeploymentColumnsMore"/> 
+			<include refid="actCioDeploymentColumns"/>
+		FROM act_cio_deployment a
+			<include refid="actCioDeploymentJoins"/> 
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findListByVO" resultType="com.ciocem.activiti.vo.ActCioDeploymentVO" >
+		SELECT 
+		    <include refid="actCioDeploymentColumnsMore"/> 
+			<include refid="actCioDeploymentColumns"/>
+		FROM act_cio_deployment a
+			<include refid="actCioDeploymentJoins"/> 
+		<where>
+			<include refid="actCioDeploymentWhere"/>
+		</where>
+	</select>
+	
+	<select id="getListByPage" resultType="com.ciocem.activiti.vo.ActCioDeploymentVO" >
+		SELECT
+		<include refid="actCioDeploymentColumnsMore"/> 
+		<include refid="actCioDeploymentColumns"/>
+		FROM 
+		<choose>
+			<when test="entity.dbName == 'mssql'">
+				(select ROW_NUMBER() OVER( order by a.id desc) as 'rownum', a.* from act_cio_deployment a
+				<include refid="actCioDeploymentJoins"/>
+				<where>
+				 	 <include refid="actCioDeploymentWhere"/> 
+				</where>
+				) a
+			</when>
+			<otherwise>
+				act_cio_deployment a
+			</otherwise>
+		</choose>
+		<include refid="actCioDeploymentJoins"/>
+		<where>
+			 <include refid="actCioDeploymentWhere"/> 
+			<if test="entity.dbName == 'mssql'">AND rownum between ${page.rowNumStart}  and ${page.rowNumEnd}</if>
+		</where>
+		<if test="entity.dbName == 'mysql'">LIMIT ${page.recordStart},${page.pageSize}</if>
+	</select>
+
+	<select id="getTotalByPage" parameterType="java.util.Map" resultType="java.lang.Integer">
+		SELECT
+		COUNT(1)
+		FROM act_cio_deployment a
+		<include refid="actCioDeploymentJoins"/> 
+		<where>
+			 <include refid="actCioDeploymentWhere"/> 
+		</where>
+	</select>
+	 
+    <sql id="actCioDeploymentColumnsMore"></sql>
+	<sql id="actCioDeploymentJoins"></sql>
+	<sql id="actCioDeploymentWhere">
+		<if test="entity.deploymentId != null and entity.deploymentId != ''">
+			AND a.deployment_id = #{entity.deploymentId}
+		</if>
+		<if test="entity.resourceId != null and entity.resourceId != ''">
+			AND a.resource_id = #{entity.resourceId}
+		</if>
+		<if test="entity.proName != null and entity.proName != ''">
+			AND a.pro_name = #{entity.proName}
+		</if>
+		<if test="entity.type != null and entity.type != ''">
+			AND a.type = #{entity.type}
+		</if>
+	</sql>
+</mapper>

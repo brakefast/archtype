@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ciocem.activiti.dao.ActCioModelModuleRelDao">
+    
+	<sql id="actCioModelModuleRelColumns">
+		a.id AS "id",
+		a.cio_model_id AS "cioModelId",
+		a.cio_module_id AS "cioModuleId",
+		a.create_date AS "createDate",
+		a.create_by AS "createBy.id",
+		a.update_date AS "updateDate",
+		a.update_by AS "updateBy.id",
+		a.remarks AS "remarks"
+	</sql>
+	
+    
+	<select id="get" resultType="ActCioModelModuleRel" >
+		SELECT 
+			<include refid="actCioModelModuleRelColumns"/>
+		FROM act_cio_model_module_rel a
+		WHERE a.id = #{id}
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO act_cio_model_module_rel(
+			id,
+			cio_model_id,
+			cio_module_id,
+			create_date,
+			create_by,
+			update_date,
+			update_by,
+			remarks
+		) VALUES (
+			#{id},
+			#{cioModelId},
+			#{cioModuleId},
+			#{createDate},
+			#{createBy.id},
+			#{updateDate},
+			#{updateBy.id},
+			#{remarks}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE act_cio_model_module_rel
+		SET 	
+			cio_model_id = #{cioModelId},
+			cio_module_id = #{cioModuleId},
+			update_date = #{updateDate},
+			update_by = #{updateBy.id},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM act_cio_model_module_rel
+		WHERE id = #{id}
+	</update>
+	
+	<select id="findList" resultType="ActCioModelModuleRel" >
+		SELECT
+			<include refid="actCioModelModuleRelColumnsMore"/>
+			<include refid="actCioModelModuleRelColumns"/>
+		FROM act_cio_model_module_rel a
+		<include refid="actCioModelModuleRelJoins"/> 
+		<where>
+
+		</where>
+	</select>
+	
+	<select id="getVOById" resultType="com.ciocem.activiti.vo.ActCioModelModuleRelVO" >
+		SELECT
+			<include refid="actCioModelModuleRelColumnsMore"/>
+			<include refid="actCioModelModuleRelColumns"/>
+		FROM act_cio_model_module_rel a
+			<include refid="actCioModelModuleRelJoins"/> 
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findListByVO" resultType="com.ciocem.activiti.vo.ActCioModelModuleRelVO" >
+		SELECT
+		    <include refid="actCioModelModuleRelColumnsMore"/>
+			<include refid="actCioModelModuleRelColumns"/>
+		FROM act_cio_model_module_rel a
+			<include refid="actCioModelModuleRelJoins"/> 
+		<where>
+			<include refid="actCioModelModuleRelWhere"/>
+		</where>
+	</select>
+	
+	<select id="getListByPage" resultType="com.ciocem.activiti.vo.ActCioModelModuleRelVO" >
+		SELECT
+		<include refid="actCioModelModuleRelColumnsMore"/>
+		<include refid="actCioModelModuleRelColumns"/>
+		FROM
+		<choose>
+			<when test="entity.dbName == 'mssql'">
+				(select ROW_NUMBER() OVER( order by a.update_date desc) as 'rownum', a.* from act_cio_model_module_rel a
+				<include refid="actCioModelModuleRelJoins"/>
+				<where>
+				 	 <include refid="actCioModelModuleRelWhere"/> 
+				</where>
+				) a
+			</when>
+			<otherwise>
+				act_cio_model_module_rel a
+			</otherwise>
+		</choose>
+		<include refid="actCioModelModuleRelJoins"/>
+		<where>
+			 <include refid="actCioModelModuleRelWhere"/> 
+			<if test="entity.dbName == 'mssql'">AND rownum between ${page.rowNumStart}  and ${page.rowNumEnd}</if>
+		</where>
+		<if test="entity.dbName == 'mysql'">LIMIT ${page.recordStart},${page.pageSize}</if>
+	</select>
+
+	<select id="getTotalByPage" parameterType="java.util.Map" resultType="java.lang.Integer">
+		SELECT
+		COUNT(1)
+		FROM act_cio_model_module_rel a
+		<include refid="actCioModelModuleRelJoins"/> 
+		<where>
+			 <include refid="actCioModelModuleRelWhere"/> 
+		</where>
+	</select>
+	 
+    <sql id="actCioModelModuleRelColumnsMore">
+		u.module_key AS moduleKey,
+		u.module_name AS moduleName,
+		u.module_url AS moduleUrl,
+		u.service_name AS serviceName,
+		u.class_name AS className,
+		u.form_name_rules AS formNameRules,
+		u.module_type AS moduleType,
+		m.model_key AS modelKey,
+		m.model_name AS modelName,
+		m.deployment_id AS DeploymentId,
+	</sql>
+
+	<sql id="actCioModelModuleRelJoins">
+		LEFT JOIN act_cio_module u on u.id = a.cio_module_id
+		LEFT JOIN act_cio_model m on m.id = a.cio_model_id
+	</sql>
+
+	<sql id="actCioModelModuleRelWhere">
+		<if test ="entity.cioModelId != null and entity.cioModelId != ''">
+			AND a.cio_model_id = #{entity.cioModelId}
+		</if>
+		<if test ="entity.moduleKey != null and entity.moduleKey != ''">
+			AND u.module_key = #{entity.moduleKey}
+		</if>
+		<if test ="entity.modelKey != null and entity.modelKey != ''">
+			AND m.model_key = #{entity.modelKey}
+		</if>
+		<if test ="entity.modelName != null and entity.modelName != ''">
+			AND m.model_name LIKE
+				<if test="entity.dbName == 'oracle'">'%'||#{entity.modelName}||'%'</if>
+				<if test="entity.dbName == 'mssql'">'%'+#{entity.modelName}+'%'</if>
+				<if test="entity.dbName == 'mysql'">concat('%',#{entity.modelName},'%')</if>
+		</if>
+		<if test ="entity.moduleName != null and entity.moduleName != ''">
+			AND u.module_name LIKE
+				<if test="entity.dbName == 'oracle'">'%'||#{entity.moduleName}||'%'</if>
+				<if test="entity.dbName == 'mssql'">'%'+#{entity.moduleName}+'%'</if>
+				<if test="entity.dbName == 'mysql'">concat('%',#{entity.moduleName},'%')</if>
+		</if>
+	</sql>
+
+	<select id="findModuleListByModelId" resultType="com.ciocem.activiti.vo.ActCioModuleVO" >
+		SELECT
+			m.id AS "id",
+			m.module_name as "moduleName",
+			m.table_name,
+			m.service_name,
+			m.module_url
+		FROM act_cio_model_module_rel a
+		LEFT JOIN act_cio_module m ON a.cio_module_id = m.id
+		WHERE a.cio_model_id = #{modelId}  and m.id is not null
+	</select>
+
+	<select id="findModelListByModuleId" resultType="com.ciocem.activiti.vo.ActCioModelVO" >
+		SELECT m.*
+		FROM act_cio_model_module_rel a
+		LEFT JOIN act_cio_model m ON a.cio_model_id = m.id
+		WHERE a.cio_module_id = #{moduleId}  and m.id is not null order by m.model_no asc
+	</select>
+
+	<update id="deleteRelByModelId">
+		DELETE FROM act_cio_model_module_rel
+		WHERE cio_model_id = #{modelId}
+	</update>
+
+	<update id="deleteRelByModuleId">
+		DELETE FROM act_cio_model_module_rel
+		WHERE cio_module_id = #{moduleId}
+	</update>
+</mapper>

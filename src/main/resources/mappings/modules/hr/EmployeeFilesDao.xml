@@ -1,0 +1,880 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ciocem.modules.hr.dao.EmployeeFilesDao">
+
+	<!-- 原始列名 -->
+	<sql id="employeeFilesColumns">
+		a.id AS "id",
+		a.employee_no AS "employeeNo",
+		a.employee_name AS "employeeName",
+		a.employee_before_name AS "employeeBeforeName",
+		a.sex_no AS "sexNo",
+		a.organization_id1 AS "organizationId1",
+		a.organization_id2 AS "organizationId2",
+		a.employee_type AS "employeeType",
+		a.credentials_type AS "credentialsType",
+		a.credentials_no AS "credentialsNo",
+		a.entry_date AS "entryDate",
+		a.job_title AS "jobTitle",
+		a.job_post AS "jobPost",
+		a.leave_date AS "leaveDate",
+		a.retire_date AS "retireDate",
+		a.job_status AS "jobStatus",
+		a.timecard_no AS "timecardNo",
+		a.is_mothball AS "isMothball",
+		a.recruit_type AS "recruitType",
+		a.birthday AS "birthday",
+		a.nation AS "nation",
+		a.native_place AS "nativePlace",
+		a.political_status AS "politicalStatus",
+		a.party AS "party",
+		a.join_party_date AS "joinPartyDate",
+		a.real_employee_date AS "realEmployeeDate",
+		a.marriage_status AS "marriageStatus",
+		a.graduate_date AS "graduateDate",
+		a.graduate_school AS "graduateSchool",
+		a.major AS "major",
+		a.schooling_length AS "schoolingLength",
+		a.educational_background AS "educationalBackground",
+		a.foreign_language AS "foreignLanguage",
+		a.job_date AS "jobDate",
+		a.file_deposit_organization AS "fileDepositOrganization",
+		a.household_register_type AS "householdRegisterType",
+		a.household_register_address AS "householdRegisterAddress",
+		a.house_address AS "houseAddress",
+		a.phone_no AS "phoneNo",
+		a.zip_code AS "zipCode",
+		a.mobile_phone_no AS "mobilePhoneNo",
+		a.address AS "address",
+		a.qq AS "qq",
+		a.email AS "email",
+		a.office_phone_no AS "officePhoneNo",
+		a.enterprise_internal_line AS "enterpriseInternalLine",
+		a.administrative_level AS "administrativeLevel",
+		a.create_date AS "createDate",
+		a.create_by AS "createBy.id",
+		a.update_date AS "updateDate",
+		a.update_by AS "updateBy.id",
+		a.remarks AS "remarks",
+		a.english_name AS "englishName",
+		a.province AS "province",
+		a.city AS "city",
+		a.computer_level AS "computerLevel",
+ 		a.avatar AS "avatar",
+ 		a.file_resource_id AS "fileResourceId",
+ 		a.station_info_id AS "stationInfoId",
+		<!--<if test="entity.dbName == 'mssql'">-->
+			<!--YEAR(GETDATE())-YEAR(a.birthday) as "age",-->
+			<!--YEAR(GETDATE())-YEAR(a.entry_date)  as "enterpriseAge",-->
+			<!--YEAR(GETDATE())-YEAR(a.job_date) as "socialAge",-->
+		<!--</if>-->
+		<!--<if test="entity.dbName == 'mysql'">-->
+			<!--YEAR(NOW())-YEAR(a.birthday) as "age",-->
+			<!--YEAR(NOW())-YEAR(a.entry_date)  as "enterpriseAge",-->
+			<!--YEAR(NOW())-YEAR(a.job_date) as "socialAge",-->
+		<!--</if>-->
+		<!--<if test="entity.dbName == 'oracle'">-->
+			<!--YEAR(SYSDATE)-YEAR(a.birthday) as "age",-->
+			<!--YEAR(SYSDATE)-YEAR(a.entry_date)  as "enterpriseAge",-->
+			<!--YEAR(SYSDATE)-YEAR(a.job_date) as "socialAge",-->
+		<!--</if>-->
+		a.org_id AS "orgId",
+		a.employee_registration_mst_id as "employeeRegistrationMstId",
+		a.work_type AS "workType",
+		a.status AS "status",
+		a.check_user AS "checkUser",
+		a.check_date AS "checkDate",
+		a.info_status AS "infoStatus",
+		a.referee AS "referee",
+		a.auth_code AS "authCode",
+		a.employee_nature AS "employeeNature",
+		a.party_flag AS "partyFlag",
+		a.bank_card_number AS "bankCardNumber",
+		a.languages AS "languages",
+		a.job_educational_background AS "jobEducationalBackground",
+		a.job_graduate_school AS "jobGraduateSchool",
+		a.job_graduate_date AS "jobGraduateDate",
+		a.job_major AS "jobMajor",
+		a.job_schooling_length AS "jobSchoolingLength",
+		a.job_degree AS "jobDegree",
+		a.high_degree AS "highDegree",
+		a.enter_industry_date AS "enterIndustryDate",
+		a.soldier_flag AS "soldierFlag",
+		a.individual_status AS "individualStatus",
+		a.is_medical_social_security AS "isMedicalSocialSecurity",
+		a.file_no AS "fileNo"
+	</sql>
+    
+	<select id="get" resultType="EmployeeFiles" >
+		SELECT 
+			a.avatar AS "avatar",
+			<include refid="employeeFilesColumns"/>
+		FROM hr_employee_files a
+		WHERE a.id = #{id}
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO hr_employee_files(
+			id,
+			employee_no,
+			employee_name,
+			employee_before_name,
+			sex_no,
+			organization_id1,
+			organization_id2,
+			employee_type,
+			credentials_type,
+			credentials_no,
+			entry_date,
+			job_title,
+			job_post,
+			leave_date,
+			retire_date,
+			job_status,
+			timecard_no,
+			is_mothball,
+			recruit_type,
+			birthday,
+			nation,
+			native_place,
+			political_status,
+			party,
+			join_party_date,
+			real_employee_date,
+			marriage_status,
+			graduate_date,
+			graduate_school,
+			major,
+			schooling_length,
+			educational_background,
+			foreign_language,
+			job_date,
+			file_deposit_organization,
+			household_register_type,
+			household_register_address,
+			house_address,
+			phone_no,
+			zip_code,
+			mobile_phone_no,
+			address,
+			qq,
+			email,
+			office_phone_no,
+			enterprise_internal_line,
+			create_date,
+			create_by,
+			update_date,
+			update_by,
+			remarks,
+			english_name,
+			province,
+			city,
+			computer_level,
+			avatar,
+			file_resource_id,
+			station_info_id ,
+			org_id,
+			employee_registration_mst_id,
+			work_type,
+			status,
+			check_user,
+			check_date,
+			info_status,
+			administrative_level,
+			referee,
+			auth_code,
+			employee_nature,
+			party_flag,
+			bank_card_number,
+			languages,
+			job_educational_background,
+			job_graduate_school,
+			job_graduate_date,
+			job_major,
+			job_schooling_length,
+			job_degree,
+			high_degree,
+			enter_industry_date,
+			soldier_flag,
+			individual_status,
+			is_medical_social_security,
+			file_no
+		) VALUES (
+			#{id},
+			#{employeeNo},
+			#{employeeName},
+			#{employeeBeforeName},
+			#{sexNo},
+			#{organizationId1},
+			#{organizationId2},
+			#{employeeType},
+			#{credentialsType},
+			#{credentialsNo},
+			#{entryDate},
+			#{jobTitle},
+			#{jobPost},
+			#{leaveDate},
+			#{retireDate},
+			#{jobStatus},
+			#{timecardNo},
+			#{isMothball},
+			#{recruitType},
+			#{birthday},
+			#{nation},
+			#{nativePlace},
+			#{politicalStatus},
+			#{party},
+			#{joinPartyDate},
+			#{realEmployeeDate},
+			#{marriageStatus},
+			#{graduateDate},
+			#{graduateSchool},
+			#{major},
+			#{schoolingLength},
+			#{educationalBackground},
+			#{foreignLanguage},
+			#{jobDate},
+			#{fileDepositOrganization},
+			#{householdRegisterType},
+			#{householdRegisterAddress},
+			#{houseAddress},
+			#{phoneNo},
+			#{zipCode},
+			#{mobilePhoneNo},
+			#{address},
+			#{qq},
+			#{email},
+			#{officePhoneNo},
+			#{enterpriseInternalLine},
+			#{createDate},
+			#{createBy.id},
+			#{updateDate},
+			#{updateBy.id},
+			#{remarks},
+			#{englishName},
+			#{province},
+			#{city},
+			#{computerLevel},
+			#{avatar},
+			#{fileResourceId},
+			#{stationInfoId},
+			#{orgId},
+			#{employeeRegistrationMstId},
+			#{workType},
+			#{status},
+			#{checkUser},
+			#{checkDate},
+			#{infoStatus},
+			#{administrativeLevel},
+			#{referee},
+			#{authCode},
+		    #{employeeNature},
+			#{partyFlag},
+			#{bankCardNumber},
+			#{languages},
+			#{jobEducationalBackground},
+			#{jobGraduateSchool},
+			#{jobGraduateDate},
+			#{jobMajor},
+			#{jobSchoolingLength},
+			#{jobDegree},
+			#{highDegree},
+			#{enterIndustryDate},
+			#{soldierFlag},
+			#{individualStatus},
+			#{isMedicalSocialSecurity},
+			#{fileNo}
+		)
+	</insert>
+
+	<update id="update">
+		UPDATE hr_employee_files
+		SET
+			employee_no = #{employeeNo},
+			employee_name = #{employeeName},
+			employee_before_name = #{employeeBeforeName},
+			sex_no = #{sexNo},
+			organization_id1 = #{organizationId1},
+			organization_id2 = #{organizationId2},
+			employee_type = #{employeeType},
+			credentials_type = #{credentialsType},
+			credentials_no = #{credentialsNo},
+			entry_date = #{entryDate},
+			job_title = #{jobTitle},
+			job_post = #{jobPost},
+			leave_date = #{leaveDate},
+			retire_date = #{retireDate},
+			job_status = #{jobStatus},
+			timecard_no = #{timecardNo},
+			is_mothball = #{isMothball},
+			recruit_type = #{recruitType},
+			birthday = #{birthday},
+			nation = #{nation},
+			native_place = #{nativePlace},
+			political_status = #{politicalStatus},
+			party = #{party},
+			join_party_date = #{joinPartyDate},
+			real_employee_date = #{realEmployeeDate},
+			marriage_status = #{marriageStatus},
+			graduate_date = #{graduateDate},
+			graduate_school = #{graduateSchool},
+			major = #{major},
+			schooling_length = #{schoolingLength},
+			educational_background = #{educationalBackground},
+			foreign_language = #{foreignLanguage},
+			job_date = #{jobDate},
+			file_deposit_organization = #{fileDepositOrganization},
+			household_register_type = #{householdRegisterType},
+			household_register_address = #{householdRegisterAddress},
+			house_address = #{houseAddress},
+			phone_no = #{phoneNo},
+			zip_code = #{zipCode},
+			mobile_phone_no = #{mobilePhoneNo},
+			address = #{address},
+			qq = #{qq},
+			email = #{email},
+			office_phone_no = #{officePhoneNo},
+			enterprise_internal_line = #{enterpriseInternalLine},
+			update_date = #{updateDate},
+			update_by = #{updateBy.id},
+			remarks = #{remarks},
+			english_name = #{englishName},
+			province = #{province},
+			city = #{city},
+			computer_level = #{computerLevel},
+			avatar = #{avatar},
+			file_resource_id = #{fileResourceId},
+			station_info_id = #{stationInfoId},
+			org_id = #{orgId},
+			employee_registration_mst_id=#{employeeRegistrationMstId},
+			work_type=#{workType},
+			status=#{status},
+			check_date=#{checkDate},
+			check_user=#{checkUser},
+			info_status = #{infoStatus},
+			administrative_level = #{administrativeLevel},
+			referee=#{referee},
+			auth_code = #{authCode},
+			employee_nature = #{employeeNature},
+			party_flag = #{partyFlag},
+			bank_card_number = #{bankCardNumber},
+			languages = #{languages},
+			job_educational_background = #{jobEducationalBackground},
+			job_graduate_school = #{jobGraduateSchool},
+			job_graduate_date = #{jobGraduateDate},
+			job_major = #{jobMajor},
+			job_schooling_length = #{jobSchoolingLength},
+			job_degree = #{jobDegree},
+			high_degree = #{highDegree},
+			enter_industry_date = #{enterIndustryDate},
+			soldier_flag = #{soldierFlag},
+			individual_status = #{individualStatus},
+			is_medical_social_security = #{isMedicalSocialSecurity},
+			file_no = #{fileNo}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM hr_employee_files
+		WHERE id = #{id}
+	</update>
+
+	<select id="findList" resultType="EmployeeFiles" >
+		SELECT
+			a.avatar AS "avatar",
+			<include refid="employeeFilesColumns"/>
+		FROM hr_employee_files a
+		<where>
+
+		</where>
+	</select>
+	
+	<select id="getVOById" resultType="com.ciocem.modules.hr.vo.EmployeeFilesVO" >
+		SELECT 
+			a.avatar AS "avatar",
+			<include refid="employeeFilesColumns"/>
+			<include refid="employeeFilesColumnsMore"/>
+		FROM hr_employee_files a
+			<include refid="employeeFilesJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findListByVO" resultType="com.ciocem.modules.hr.vo.EmployeeFilesVO" >
+		SELECT
+			a.avatar AS "avatar",
+			<include refid="employeeFilesColumns"/>
+			<include refid="employeeFilesColumnsMore"/>
+		FROM hr_employee_files a
+			<include refid="employeeFilesJoins"/>
+		<where>
+			<include refid="employeeFilesWhere"/>
+		</where>
+	</select>
+	
+	<select id="getListByPage" resultType="com.ciocem.modules.hr.vo.EmployeeFilesVO" >
+		SELECT
+			<include refid="employeeFilesColumns"/>
+			<include refid="employeeFilesColumnsMore"/>
+		FROM 
+		<choose>
+			<when test="entity.dbName == 'mssql'">
+				(select ROW_NUMBER() OVER( order by a.update_date desc) as 'rownum', a.* from hr_employee_files a
+				<include refid="employeeFilesJoins"/>
+				<where>
+					<include refid="employeeFilesWhere"/>
+				</where>
+				) a
+			</when>
+			<otherwise>
+				hr_employee_files a
+			</otherwise>
+		</choose>
+			<include refid="employeeFilesJoins"/>
+		<where>
+			<include refid="employeeFilesWhere"/>
+			<if test="entity.dbName == 'mssql'">
+				AND rownum between ${page.rowNumStart}  and ${page.rowNumEnd}
+			</if>
+			ORDER BY a.employee_no
+		</where>
+		<if test="entity.dbName == 'mysql'">LIMIT ${page.recordStart},${page.pageSize}</if>
+	</select>
+
+	<select id="getTotalByPage" parameterType="java.util.Map" resultType="java.lang.Integer">
+		SELECT
+		COUNT(1)
+		FROM hr_employee_files a
+		<include refid="employeeFilesJoins"/>
+		<where>
+			<include refid="employeeFilesWhere"/>
+		</where>
+	</select>
+	
+	<!-- 关联数据 -->
+	<sql id="employeeFilesColumnsMore">
+		,
+	 	d1.organization_name AS "organizationName1",
+		d2.organization_name AS "organizationName2",
+		s1.name AS "provinceName",
+		s2.name AS "cityName",
+		a.employee_name AS "userName",
+		u.login_name AS "loginName",
+		hs.name AS "stationInfoName",
+		u.id AS "userId",
+		u.head_imgurl AS "headImg",
+		p.id AS "positionInfoId",
+		p.name AS "positionInfoName"
+	</sql>
+	
+	<!-- 关联表 -->
+	<sql id="employeeFilesJoins">
+		LEFT JOIN hr_organization d1  ON a.organization_id1 = d1.id
+		LEFT JOIN hr_organization d2  ON a.organization_id2 = d2.id
+		LEFT JOIN sys_area s1 ON s1.id = a.province
+		LEFT JOIN sys_area s2 ON s2.id = a.city
+		LEFT JOIN hr_station_info hs ON hs.id = a.station_info_id
+		LEFT JOIN sys_user u on a.id = u.employee_files_id
+		LEFT JOIN hr_position_info p ON p.id = hs.position_info_id
+	</sql>
+	
+	<!-- 查询条件 -->
+	<sql id="employeeFilesWhere">
+		<if test="entity.employeeNo != null and entity.employeeNo != ''">
+			<bind name="employeeNo" value="'%'+entity.employeeNo+'%'"/>
+			AND a.employee_no LIKE #{employeeNo}
+		</if>
+		<if test="entity.employeeName != null and entity.employeeName != ''">
+			<bind name="employeeName" value="'%'+entity.employeeName+'%'"/>
+			AND a.employee_name LIKE #{employeeName}
+		</if>
+		<if test="entity.sexNo != null and entity.sexNo != ''">
+			AND a.sex_no = #{entity.sexNo}
+		</if>
+		<if test="entity.status != null and entity.status != ''">
+			AND a.status = #{entity.status}
+		</if>
+		<if test="entity.credentialsNo != null and entity.credentialsNo != ''">
+			<bind name="credentialsNo" value="'%'+entity.credentialsNo+'%'"/>
+			AND a.credentials_no LIKE #{credentialsNo}
+		</if>
+		<if test="entity.major != null and entity.major != ''">
+			AND a.major = #{entity.major}
+		</if>
+		<if test="entity.householdRegisterType != null and entity.householdRegisterType != ''">
+			AND a.household_register_type = #{entity.householdRegisterType}
+		</if>
+		<if test="entity.jobStatus != null and entity.jobStatus != ''">
+			AND a.job_status = #{entity.jobStatus}
+		</if>
+		<if test="entity.jobTitle != null and entity.jobTitle != ''">
+			AND a.job_title = #{entity.jobTitle}
+		</if>
+		<if test="entity.organizationId1 != null and entity.organizationId1 != ''">
+			AND a.organization_id1 = #{entity.organizationId1}
+		</if>
+		<if test="entity.organizationId2 != null and entity.organizationId2 != ''">
+			AND a.organization_id2 = #{entity.organizationId2}
+		</if>
+		<if test="entity.credentialsType != null and entity.credentialsType != ''">
+			AND a.credentials_type = #{entity.credentialsType}
+		</if>
+		<if test="entity.employeeType != null and entity.employeeType != ''">
+			AND a.employee_type = #{entity.employeeType}
+		</if>
+		<if test="entity.entryDate1 != null and entity.entryDate1 != ''">
+			AND a.entry_date >= #{entity.entryDate1}
+		</if>
+		<if test="entity.entryDate2 != null and entity.entryDate2 != ''">
+			AND <![CDATA[a.entry_date <= #{entity.entryDate2}]]>
+		</if>
+		<if test="entity.retireDate1 != null and entity.retireDate1 != ''">
+			AND a.retire_date >= #{entity.retireDate1}
+		</if>
+		<if test="entity.retireDate2 != null and entity.retireDate2 != ''">
+			AND <![CDATA[a.retire_date <= #{entity.retireDate2}]]>
+		</if>
+		<if test="entity.keyword != null and entity.keyword != ''">
+			<bind name="keyword" value="'%' + entity.keyword + '%'"/>
+			and (a.employee_no LIKE #{keyword} OR a.employee_name LIKE #{keyword} OR d1.organization_name LIKE #{keyword}
+			OR d2.organization_name like #{keyword})
+		</if>
+		<if test = "entity.notEqId != null and entity.notEqId !=''">
+			AND  a.id != #{entity.notEqId}
+		</if>
+		<if test = "entity.eqNumber != null and entity.eqNumber !=''">
+			AND  a.credentials_no = #{entity.eqNumber}
+		</if>
+		<if test="entity.eqNo != null and entity.eqNo != ''">
+			AND a.employee_no = #{entity.eqNo}
+		</if>
+		<if test = "entity.currentOrgId != null and entity.currentOrgId !=''">
+			AND  a.org_id = #{entity.currentOrgId}
+		</if>
+		<if test = "entity.stationInfoId != null and entity.stationInfoId !=''">
+			AND  a.station_info_id = #{entity.stationInfoId}
+		</if>
+		<if test="entity.filterType != null and entity.filterType !='' and entity.filterType=='notmapuser'">
+			AND NOT EXISTS(SELECT 1 FROM sys_user WHERE employee_files_id=a.id)
+		</if>
+
+		<if test = "entity.userExistFlag != null and entity.userExistFlag !=''">
+			AND  u.id is not null AND u.lock_flag = '0' AND u.login_flag = '1'
+		</if>
+		<if test="entity.userKeyword != null and entity.userKeyword != ''">
+			<bind name="userKeyword" value="'%' + entity.userKeyword + '%'"/>
+			AND (u.name LIKE #{userKeyword} OR u.login_name LIKE #{userKeyword} OR a.employee_name LIKE #{userKeyword})
+		</if>
+		<if test="entity.userOrganizationIds != null and entity.userOrganizationIds != ''">
+			AND a.organization_id2 IN
+			<foreach collection="entity.userOrganizationIds" index="index" item="userOrganizationId" open="("
+					 separator="," close=")">
+				#{userOrganizationId}
+			</foreach>
+		</if>
+		<if test="entity.inUserIds != null and entity.inUserIds != ''">
+			AND u.id IN
+			<foreach collection="entity.inUserIds" index="index" item="inUserId" open="("
+					 separator="," close=")">
+				#{inUserId}
+			</foreach>
+		</if>
+		<if test="entity.filterJobStatus != null and entity.filterJobStatus != '' and entity.filterJobStatus == '1'.toString()">
+			AND job_status!='1' AND job_status!='3'
+		</if>
+		<if test="entity.employeeTypes != null and entity.employeeTypes != ''">
+			AND a.employee_type IN
+			<foreach collection="entity.employeeTypes" index="index" item="employeeType" open="("
+					 separator="," close=")">
+				#{employeeType}
+			</foreach>
+		</if>
+		<if test="entity.jobStatuses != null and entity.jobStatuses != ''">
+			AND a.job_status IN
+			<foreach collection="entity.jobStatuses" index="index" item="jobStatus" open="("
+					 separator="," close=")">
+				#{jobStatus}
+			</foreach>
+		</if>
+		<if test="entity.id != null and entity.id != ''">
+			AND a.id = #{entity.id}
+		</if>
+	</sql>
+	
+	<sql id="empDataCols">
+		a.employee_no AS empNo, 
+		a.employee_name AS empName,
+		a.id,
+		b.organization_name AS deptName,
+		c.organization_name AS orgName
+	</sql>
+	<sql id="empDataJoin">
+		LEFT JOIN  hr_organization b ON a.organization_id2=b.id
+		LEFT JOIN  hr_organization c ON a.organization_id1=c.id
+	</sql>
+	<sql id="empDataWhere">		
+		<if test="entity.empNo != null and entity.empNo != ''">
+			<bind name="empNo" value="'%'+ entity.empNo +'%'"/>
+			AND a.employee_no like #{empNo}
+		</if>
+		<if test="entity.empName != null and entity.empName != ''">
+			<bind name="empName" value="'%'+ entity.empName +'%'"/>
+			AND a.employee_name like #{empName}
+		</if>
+		<if test="entity.keyWord != null and entity.keyWord != ''">
+			<bind name="keyWord" value="'%'+entity.keyWord+'%'"/>
+			AND (a.employee_no like #{keyWord} OR a.employee_name like #{keyWord})
+		</if>
+		<if test="entity.orgId != null and entity.orgId != ''">
+			AND (EXISTS(SELECT 1 FROM tmptable WHERE id=a.organization_id2) OR a.organization_id2 is null)
+		</if>
+	</sql>
+	<select id="getEmpDataByPage" resultType="com.ciocem.modules.hr.vo.EmpDataVO">
+		<if test="entity.orgId != null and entity.orgId != ''">
+			WITH
+			tmptable(id,parent_organization_id)
+			AS ( SELECT id,parent_organization_id FROM hr_organization WHERE id=#{entity.orgId}			
+			UNION ALL
+			SELECT o1.id,o1.parent_organization_id FROM hr_organization o1,tmptable WHERE o1.parent_organization_id = tmptable.id 
+			)
+		</if>
+		SELECT
+		<choose>
+			<when test="entity.dbName == 'mssql'">
+				* FROM
+				(select ROW_NUMBER() OVER( order by a.update_date desc) as
+				'rownum',				
+				<include refid="empDataCols" />
+				from hr_employee_files a
+				<include refid="empDataJoin" />
+				<where>
+					<include refid="empDataWhere" />
+				</where>
+				) a
+			</when>
+			<otherwise>				
+				<include refid="empDataCols" />
+				FROM sys_user a
+				<include refid="empDataJoin" />
+				<include refid="empDataWhere" />
+			</otherwise>
+		</choose>
+		<where>
+			<if test="entity.dbName == 'mssql'">AND rownum between ${page.rowNumStart} and
+				${page.rowNumEnd}</if>
+		</where>
+		<if test="entity.dbName == 'mysql'">LIMIT ${page.recordStart},${page.pageSize}</if>
+	</select>
+	
+	<select id="getTotalEmpData" parameterType="java.util.Map" resultType="java.lang.Integer">
+		<if test="entity.orgId != null and entity.orgId != ''">
+			WITH
+			tmptable(id,parent_organization_id)
+			AS ( SELECT id,parent_organization_id FROM hr_organization WHERE id=#{entity.orgId}			
+			UNION ALL
+			SELECT o1.id,o1.parent_organization_id FROM hr_organization o1,tmptable WHERE o1.parent_organization_id = tmptable.id 
+			)
+		</if>
+		SELECT COUNT(1)
+		FROM hr_employee_files a
+		<include refid="empDataJoin" />
+		<where>
+			<include refid="empDataWhere" />
+		</where>
+	</select>
+	<!--查找两个日期范围内生日的员工-->
+	<select id="getEmpNameByBirthRange" resultType="com.ciocem.modules.hr.vo.EmployeeFilesVO" >
+		select <include refid="employeeFilesColumns"/> ,d1.organization_name AS "organizationName1",
+		d2.organization_name AS "organizationName2" from hr_employee_files a
+		LEFT JOIN  hr_organization d1  ON a.organization_id1 = d1.id
+		LEFT JOIN hr_organization d2  ON a.organization_id2 = d2.id
+		where a.id in(
+		SELECT id FROM hr_employee_files WHERE
+		<if test="dbName == 'mssql'">
+			right(convert(char(10),birthday,112),6) >= right(convert(char(10),#{beginDate},112),6) and
+			<![CDATA[right(convert(char(10),birthday,112),6) <=  right(convert(char(10),#{endDate},112),6)]]>
+		</if>
+		<if test="dbName == 'mysql'">
+			right(convert(birthday,char(10)),6) >= right(convert(#{beginDate},char(10)),6) and
+			<![CDATA[right(convert(birthday,char(10)),6) <=  right(convert(#{endDate},char(10)),6)]]>
+		</if>
+		and job_status ='0'
+		)
+	</select>
+
+	<select id="getList7App" resultType="com.ciocem.api.hr.dto.EmployeeDto" >
+		SELECT
+		<choose>
+			<when test="entity.dbName == 'mssql'">
+				* FROM
+				(select ROW_NUMBER() OVER(order by a.employee_name DESC) as 'rownum',
+				<include refid="columnsMore7App"/>
+				<include refid="columns7App"/>
+				from hr_employee_files a
+				<include refid="join7App"/>
+				<where>
+					<include refid="where7App"/>
+				</where>
+				) a
+			</when>
+			<otherwise>
+				<include refid="columnsMore7App"/>
+				<include refid="columns7App"/>
+				FROM hr_employee_files a
+				<include refid="join7App"/>
+				<where>
+					<include refid="where7App"/>
+				</where>
+			</otherwise>
+		</choose>
+		<where>
+			<if test="entity.dbName == 'mssql'">AND rownum between ${page.rowNumStart}  and ${page.rowNumEnd}</if>
+		</where>
+		<if test="entity.dbName == 'mysql'">LIMIT ${page.recordStart},${page.pageSize}</if>
+	</select>
+	<select id="getTotalList7App" resultType="java.lang.Integer">
+		SELECT
+		COUNT(1)
+		FROM hr_employee_files a
+		<include refid="join7App"/>
+		<where>
+			<include refid="where7App"/>
+		</where>
+	</select>
+
+	<sql id="columns7App">
+		a.id AS "id",
+		a.employee_name AS "employeeName",
+		a.employee_no AS "employeeNo"
+	</sql>
+	<sql id="columnsMore7App">
+		a.employee_name AS "userName",
+		u.id AS "userId",
+	</sql>
+	<sql id="join7App">
+		LEFT JOIN sys_user u ON a.id = u.employee_files_id
+	</sql>
+	<sql id="where7App">
+		<if test="entity.employeeNo != null and entity.employeeNo != ''">
+			<bind name="employeeNo" value="'%'+ entity.employeeNo +'%'"/>
+			AND a.employee_no like #{employeeNo}
+		</if>
+		<if test="entity.employeeName != null and entity.employeeName != ''">
+			<bind name="employeeName" value="'%'+ entity.employeeName +'%'"/>
+			AND a.employee_name like #{employeeName}
+		</if>
+		<if test="entity.keyword != null and entity.keyword != ''">
+			<bind name="keyword" value="'%'+ entity.keyword +'%'"/>
+			AND (a.employee_name like #{keyword} OR  a.employee_no like #{keyword})
+		</if>
+		<if test="entity.filterJobStatus != null and entity.filterJobStatus != '' and entity.filterJobStatus == '1'.toString()">
+			AND (a.job_status='2' OR a.job_status='4' OR a.job_status='0' OR a.job_status='5' OR a.job_status='6'
+			)
+		</if>
+		<if test = "entity.userExistFlag != null and entity.userExistFlag !=''">
+			AND  u.id is not null AND u.lock_flag = '0' AND u.login_flag = '1'
+		</if>
+	</sql>
+	<select id="getEmployeeNumber" resultType="java.lang.Integer">
+		SELECT
+		COUNT(1)
+		FROM hr_employee_files a
+		<include refid="employeeFilesJoins"/>
+		<where>
+			<include refid="getEmployeeNumberWhere"/>
+		</where>
+	</select>
+	<sql id="getEmployeeNumberWhere">
+		<if test="entity.organizationId2 != null and entity.organizationId2 != ''">
+			AND a.organization_id2 = #{entity.organizationId2}
+		</if>
+		<if test="entity.stationInfoId != null and entity.stationInfoId != ''">
+			AND a.station_info_id = #{entity.stationInfoId}
+		</if>
+		AND a.job_status !='1'AND a.job_status !='3'
+	</sql>
+
+	<select id="getEmpDataForDjhr" resultType="com.ciocem.modules.hr.vo.EmployeeFilesForDjhrVO">
+		SELECT a.id AS "id",
+		a.employee_name AS "employeeName",
+		a.employee_no AS "employeeNo",
+		a.organization_id1 AS "organizationId1",
+		a.organization_id2 AS "organizationId2",
+		d1.organization_name AS "organizationName1",
+		d2.organization_name AS "organizationName2"
+		FROM hr_employee_files a
+		LEFT JOIN hr_organization d1  ON a.organization_id1 = d1.id
+		LEFT JOIN hr_organization d2  ON a.organization_id2 = d2.id
+		<where>
+			<if test="entity.orgLs != null and entity.orgLs != ''">
+				AND a.organization_id2 IN
+				<foreach collection="entity.orgLs" index="index" item="orgId" open="("
+						 separator="," close=")">
+					#{orgId}
+				</foreach>
+			</if>
+			<if test="entity.employeeTypeLs != null and entity.employeeTypeLs != ''">
+				AND a.employee_type IN
+				<foreach collection="entity.employeeTypeLs" index="index" item="employeeType" open="("
+						 separator="," close=")">
+					#{employeeType}
+				</foreach>
+			</if>
+			<if test="entity.jobStatusLs != null and entity.jobStatusLs != ''">
+				AND a.job_status IN
+				<foreach collection="entity.jobStatusLs" index="index" item="jobStatus" open="("
+						 separator="," close=")">
+					#{jobStatus}
+				</foreach>
+			</if>
+		</where>
+
+	</select>
+	<select id="getEmployeeFilesTreeData" resultType="com.ciocem.modules.hr.vo.EmployeeFiles4TreeVO">
+		SELECT
+			org.*,case when dtl.id is NULL THEN 0 ELSE 1 end checked
+		FROM
+		(SELECT DISTINCT
+				id,
+				organization_no AS cno,
+				parent_organization_id AS pId,
+				organization_name AS name,
+				CASE parent_organization_id
+			WHEN '0' THEN
+				1
+			ELSE
+				0
+			END AS 'open',
+			corporation_flag AS nType,
+			sort
+		FROM
+			hr_organization
+		WHERE
+			(
+				is_project_organization IS NULL
+				OR is_project_organization = '0'
+			)
+		AND (type != '3' OR type IS NULL)
+		UNION
+			SELECT
+				a.id,
+				a.employee_no AS cno,
+				a.organization_id2 AS pId,
+				a.employee_name,
+				0 AS 'open',
+				'2' AS nType,
+				999999 AS sort
+			FROM
+				hr_employee_files a
+			where
+		 a.job_status != '1'
+		) org
+		LEFT JOIN hr_vacation_adjustment_dtl dtl ON  dtl.employee_files_id= org.id
+		<if test="entity.searchId != null and entity.searchId != ''">
+			AND dtl.vacation_adjustment_mst_id= #{entity.searchId}
+		</if>
+
+		ORDER BY
+			sort,
+			name
+	</select>
+</mapper>

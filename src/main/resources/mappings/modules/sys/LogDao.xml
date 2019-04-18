@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ciocem.modules.sys.dao.LogDao">
+    
+    <sql  id="logColumns">
+   		a.id AS "id",
+		a.type AS "type",
+		a.title AS "title",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.remote_addr AS "remoteAddr",
+		a.user_agent AS "userAgent",
+		a.request_uri AS "requestUri",
+		a.method AS "method",	
+		a.params AS "param",
+		a.exception AS "exception",
+		u.id AS "createById",
+			u.name AS "createByName"
+-- 			c.name AS "createByCompanyName",
+-- 			o.name AS "createByOfficeName"
+    </sql>
+   
+	<select id="findList" resultType="Log">
+		SELECT 
+			a.*,
+			u.id AS "createBy.id",
+			u.name AS "createBy.name",
+			c.name AS "createBy.company.name",
+			o.name AS "createBy.office.name"
+		FROM sys_log a
+		JOIN sys_user u ON u.id = a.create_by
+		JOIN sys_office c ON c.id = u.company_id
+		JOIN sys_office o ON o.id = u.office_id
+		WHERE a.create_date BETWEEN #{beginDate} AND #{endDate}
+		<if test="title != null and title != ''">
+			AND a.title LIKE 
+					<if test="dbName == 'mssql'">'%'+#{description}+'%'</if>
+					<if test="dbName == 'oracle'">'%'||#{title}||'%'</if>
+					<if test="dbName == 'mysql'">CONCAT('%', #{title}, '%')</if>
+		</if>
+		<if test="createBy != null and createBy.id != null and createBy.id != ''">
+			AND a.create_by = #{createBy.id}
+		</if>
+		<if test="requestUri != null and requestUri != ''">
+			AND a.request_uri LIKE 
+					<if test="dbName == 'mssql'">'%'+#{description}+'%'</if>
+					<if test="dbName == 'oracle'">'%'||#{requestUri}||'%'</if>
+					<if test="dbName == 'mysql'">CONCAT('%', #{requestUri}, '%')</if>
+		</if>
+		<if test="exception != null and exception != ''">
+			AND a.type = #{TYPE_EXCEPTION}
+		</if>
+ 	</select>
+	
+	<select id="get" resultType="Log">
+		SELECT *
+		FROM sys_log 
+		WHERE id = #{id}
+	</select>
+	
+	<update id="delete">
+		DELETE FROM sys_log 
+		WHERE id = #{id}
+	</update>
+	
+	<insert id="insert">
+		INSERT INTO sys_log(
+			id, 
+			type, 
+			title,
+			create_by, 
+			create_date, 
+			remote_addr, 
+			user_agent, 
+			request_uri, 
+			method, 
+			params, 
+			exception
+		) VALUES (
+			#{id}, 
+			#{type}, 
+			#{title}, 
+			#{createBy.id}, 
+			#{createDate}, 
+			#{remoteAddr}, 
+			#{userAgent}, 
+			#{requestUri}, 
+			#{method}, 
+			#{params}, 
+			#{exception}
+		)
+	</insert>
+	
+	<!--通过页面查找数据 -->
+	<select id="getListByPage" resultType="LogVO" >
+		SELECT
+			a.id AS "id",
+			a.type AS "type",
+			a.title AS "title",
+			a.create_by AS "createBy.id",
+			a.create_date AS "createDate",
+			a.remote_addr AS "remoteAddr",
+			a.user_agent AS "userAgent",
+			a.request_uri AS "requestUri",
+			a.method AS "method",
+			a.params AS "param",
+			a.exception AS "exception",
+			u.id AS "createById",
+			u.name AS "createByName",
+			f.employee_name AS 'employeeFileName',
+			o1.organization_name AS 'companyName',
+			o2.organization_name AS 'officeName'
+		FROM
+			<choose>
+				<when test="entity.dbName == 'mssql'">
+					(select ROW_NUMBER() OVER( order by a.create_date DESC) as 'rownum', a.* from sys_log a
+					LEFT JOIN sys_user u ON u.id = a.create_by
+					LEFT JOIN hr_employee_files f ON f.id = u.employee_files_id
+					LEFT JOIN hr_organization o1 ON o1.id = f.organization_id1
+					LEFT JOIN hr_organization o2 ON o2.id = f.organization_id2
+					<where>
+						<if test="entity.title != null and entity.title != ''">
+							AND a.title LIKE '%'+#{entity.title}+'%'
+						</if>
+						<if test="entity.employeeFileName != null and entity.employeeFileName != ''">
+							AND (f.employee_name LIKE '%'+#{entity.employeeFileName}+'%'
+							OR u.name LIKE '%'+#{entity.employeeFileName}+'%'
+							OR u.login_name LIKE '%'+#{entity.employeeFileName}+'%')
+						</if>
+						<if test="entity.beginDate != null and entity.beginDate != ''">
+							AND a.create_date >= #{entity.beginDate}
+						</if>
+						<if test="entity.endDate != null and entity.endDate != ''">
+							AND <![CDATA[a.create_date <= #{entity.endDate}]]>
+						</if>
+						<if test="entity.type != null and entity.type != ''">
+							AND a.type = #{entity.type}
+						</if>
+					</where>
+					) a
+				</when>
+				<otherwise>
+					sys_log a
+				</otherwise>
+			</choose>
+		LEFT JOIN sys_user u ON u.id = a.create_by
+		LEFT JOIN hr_employee_files f ON f.id = u.employee_files_id
+		LEFT JOIN hr_organization o1 ON o1.id = f.organization_id1
+		LEFT JOIN hr_organization o2 ON o2.id = f.organization_id2
+		<where>
+			<if test="entity.title != null and entity.title != ''">
+				AND a.title LIKE '%'+#{entity.title}+'%'
+			</if>
+			<if test="entity.employeeFileName != null and entity.employeeFileName != ''">
+				AND (f.employee_name LIKE '%'+#{entity.employeeFileName}+'%'
+				OR u.name LIKE '%'+#{entity.employeeFileName}+'%'
+				OR u.login_name LIKE '%'+#{entity.employeeFileName}+'%')
+			</if>
+			<if test="entity.beginDate != null and entity.beginDate != ''">
+				AND a.create_date >= #{entity.beginDate}
+			</if>
+			<if test="entity.endDate != null and entity.endDate != ''">
+				AND <![CDATA[a.create_date <= #{entity.endDate}]]>
+			</if>
+			<if test="entity.type != null and entity.type != ''">
+				AND a.type = #{entity.type}
+			</if>
+			<if test="entity.dbName == 'mssql'">AND rownum between ${page.rowNumStart}  and ${page.rowNumEnd}</if>
+		</where>
+	</select>
+	
+	<!--查找数据总数 -->
+	<select id="getTotalByPage" parameterType="java.util.Map" resultType="java.lang.Integer">
+		SELECT COUNT(1)
+		FROM sys_log a
+		LEFT JOIN sys_user u ON u.id = a.create_by
+		LEFT JOIN hr_employee_files f ON f.id = u.employee_files_id
+		LEFT JOIN hr_organization o1 ON o1.id = f.organization_id1
+		LEFT JOIN hr_organization o2 ON o2.id = f.organization_id2
+		<where>
+			<if test="entity.title != null and entity.title != ''">
+				AND a.title LIKE '%'+#{entity.title}+'%'
+			</if>
+			<if test="entity.employeeFileName != null and entity.employeeFileName != ''">
+				AND (f.employee_name LIKE '%'+#{entity.employeeFileName}+'%'
+				OR u.name LIKE '%'+#{entity.employeeFileName}+'%'
+				OR u.login_name LIKE '%'+#{entity.employeeFileName}+'%')
+			</if>
+			<if test="entity.beginDate != null and entity.beginDate != ''">
+				AND a.create_date >= #{entity.beginDate}
+			</if>
+			<if test="entity.endDate != null and entity.endDate != ''">
+				AND <![CDATA[a.create_date <= #{entity.endDate}]]>
+			</if>
+			<if test="entity.type != null and entity.type != ''">
+				AND a.type = #{entity.type}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 通过ID获取异常信息 -->
+	<select id="getExceptionById" resultType="LogVO">
+		SELECT a.exception
+		FROM sys_log  AS a
+		WHERE a.id = #{id}
+	</select>
+				
+</mapper>

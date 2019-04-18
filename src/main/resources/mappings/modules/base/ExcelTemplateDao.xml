@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ciocem.modules.base.dao.ExcelTemplateDao">
+    
+	<sql id="excelTemplateColumns">
+		a.id AS "id",
+		a.module_name AS "moduleName",
+		a.module_key AS "moduleKey",
+		a.template_code AS "templateCode",
+		a.template_name AS "templateName",
+		a.type AS "type",
+		a.head_num AS "headNum",
+		a.table_name AS "tableName",
+		a.create_date AS "createDate",
+		a.create_by AS "createBy.id",
+		a.update_date AS "updateDate",
+		a.update_by AS "updateBy.id",
+		a.remarks AS "remarks"
+	</sql>
+	
+    
+	<select id="get" resultType="ExcelTemplate" >
+		SELECT 
+			<include refid="excelTemplateColumns"/>
+		FROM cio_excel_template a
+		WHERE a.id = #{id}
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO cio_excel_template(
+			id,
+			module_name,
+			module_key,
+			template_code,
+			template_name,
+			type,
+			head_num,
+			table_name,
+			create_date,
+			create_by,
+			update_date,
+			update_by,
+			remarks
+		) VALUES (
+			#{id},
+			#{moduleName},
+			#{moduleKey},
+			#{templateCode},
+			#{templateName},
+			#{type},
+			#{headNum},
+			#{tableName},
+			#{createDate},
+			#{createBy.id},
+			#{updateDate},
+			#{updateBy.id},
+			#{remarks}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE cio_excel_template
+		SET 	
+			module_name = #{moduleName},
+			module_key = #{moduleKey},
+			template_code = #{templateCode},
+			template_name = #{templateName},
+			type = #{type},
+			head_num = #{headNum},
+			table_name = #{tableName},
+			update_date = #{updateDate},
+			update_by = #{updateBy.id},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM cio_excel_template WHERE id = #{id};
+		DELETE FROM cio_excel_column WHERE excel_template_id = #{id};
+	</update>
+	
+	<select id="findList" resultType="ExcelTemplate" >
+		SELECT 
+			<include refid="excelTemplateColumns"/>
+		FROM cio_excel_template a
+		<where>
+		
+		</where>
+	</select>
+	
+	<select id="getVOById" resultType="com.ciocem.modules.base.vo.ExcelTemplateVO" >
+		SELECT 
+			<include refid="excelTemplateColumnsMore"/> 
+			<include refid="excelTemplateColumns"/>
+		FROM cio_excel_template a
+			<include refid="excelTemplateJoins"/> 
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findListByVO" resultType="com.ciocem.modules.base.vo.ExcelTemplateVO" >
+		SELECT 
+		    <include refid="excelTemplateColumnsMore"/> 
+			<include refid="excelTemplateColumns"/>
+		FROM cio_excel_template a
+			<include refid="excelTemplateJoins"/> 
+		<where>
+			<include refid="excelTemplateWhere"/>
+		</where>
+	</select>
+	
+	<select id="getListByPage" resultType="com.ciocem.modules.base.vo.ExcelTemplateVO" >
+		SELECT
+		<include refid="excelTemplateColumnsMore"/> 
+		<include refid="excelTemplateColumns"/>
+		FROM 
+		<choose>
+			<when test="entity.dbName == 'mssql'">
+				(select ROW_NUMBER() OVER( order by a.id desc) as 'rownum', a.* from cio_excel_template a
+				<include refid="excelTemplateJoins"/>
+				<where>
+				 	 <include refid="excelTemplateWhere"/> 
+				</where>
+				) a
+			</when>
+			<otherwise>
+				cio_excel_template a
+			</otherwise>
+		</choose>
+		<include refid="excelTemplateJoins"/>
+		<where>
+			 <include refid="excelTemplateWhere"/> 
+			<if test="entity.dbName == 'mssql'">AND rownum between ${page.rowNumStart}  and ${page.rowNumEnd}</if>
+		</where>
+		<if test="entity.dbName == 'mysql'">LIMIT ${page.recordStart},${page.pageSize}</if>
+	</select>
+
+	<select id="getTotalByPage" parameterType="java.util.Map" resultType="java.lang.Integer">
+		SELECT COUNT(1)
+		FROM cio_excel_template a
+		<include refid="excelTemplateJoins"/> 
+		<where>
+			 <include refid="excelTemplateWhere"/> 
+		</where>
+	</select>
+	 
+    <sql id="excelTemplateColumnsMore"></sql>
+	<sql id="excelTemplateJoins"></sql>
+	<sql id="excelTemplateWhere">
+		<if test="entity.templateCode != null and entity.templateCode != ''">
+			AND a.template_code = #{entity.templateCode}
+		</if>
+		<if test="entity.moduleKey != null and entity.moduleKey != ''">
+			AND a.module_key = #{entity.moduleKey}
+		</if>
+		<if test="entity.type != null and entity.type != ''">
+			AND a.type = #{entity.type}
+		</if>
+		<if test="entity.templateName != null and entity.templateName != ''">
+			AND a.template_name LIKE
+			<if test="entity.dbName == 'oracle'">'%'||#{entity.templateName}||'%'</if>
+			<if test="entity.dbName == 'mssql'">'%'+#{entity.templateName}+'%'</if>
+			<if test="entity.dbName == 'mysql'">concat('%',#{entity.templateName},'%')</if>
+		</if>
+	</sql>
+
+	<select id="getValByRelTable"  resultType="java.lang.String">
+		SELECT ${relColumnName}
+		FROM ${relTableName} a
+		WHERE a.id = #{relValue}
+	</select>
+</mapper>

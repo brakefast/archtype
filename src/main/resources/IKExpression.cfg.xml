@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<function-configuration>
+	<!-- 系统函数默认配置 -->
+	<!--<bean class="com.ciocem.common.utils.expression.function.SystemFunctions">-->
+		<!--<function name="CONTAINS" method="contains">-->
+			<!--<parameter-type>java.lang.String</parameter-type>-->
+			<!--<parameter-type>java.lang.String</parameter-type>-->
+		<!--</function>-->
+		<!--<function name="STARTSWITH" method="startsWith">-->
+			<!--<parameter-type>java.lang.String</parameter-type>-->
+			<!--<parameter-type>java.lang.String</parameter-type>-->
+		<!--</function>-->
+		<!--<function name="ENDSWITH" method="endsWith">-->
+			<!--<parameter-type>java.lang.String</parameter-type>-->
+			<!--<parameter-type>java.lang.String</parameter-type>-->
+		<!--</function>-->
+		<!--<function name="CALCDATE" method="calcDate">-->
+			<!--<parameter-type>java.util.Date</parameter-type>-->
+			<!--<parameter-type>int</parameter-type>-->
+			<!--<parameter-type>int</parameter-type>-->
+			<!--<parameter-type>int</parameter-type>-->
+			<!--<parameter-type>int</parameter-type>-->
+			<!--<parameter-type>int</parameter-type>-->
+			<!--<parameter-type>int</parameter-type>-->
+		<!--</function>-->
+		<!--<function name="SYSDATE" method="sysDate" />-->
+		<!--<function name="DAYEQUALS" method="dayEquals">-->
+			<!--<parameter-type>java.util.Date</parameter-type>-->
+			<!--<parameter-type>java.util.Date</parameter-type>-->
+		<!--</function>-->
+	<!--</bean>-->
+	
+	<!-- 用户函数配置  请在这里定制您自己的函数
+    -->
+	<bean class="com.ciocem.common.utils.expression.function.VacationRuleFunction">
+		<!-- function-type 1、公共函数； 2、数学函数； 3、日期函数 -->
+		<!-- 公共函数——条件判断 -->
+		<!-- @return java.lang.String -->
+		<function name="IF" method="iF">
+			<parameter-type name="bool">boolean</parameter-type>
+			<parameter-type name="a">java.lang.Object</parameter-type>
+			<parameter-type name="b">java.lang.Object</parameter-type>
+			<result-type>String</result-type>
+			<describe>条件判断</describe>
+			<function-type>1</function-type>
+		</function>
+		<!-- 数学函数——四舍五入 -->
+		<!-- @return double -->
+		<function name="Round" method="round">
+			<parameter-type name="a">double</parameter-type>
+			<parameter-type name="n">int</parameter-type>
+			<result-type>double</result-type>
+			<describe>四舍五入</describe>
+			<function-type>2</function-type>
+		</function>
+		<!-- 数学函数——取整 -->
+		<!-- @return int -->
+		<function name="Int" method="iNT">
+			<parameter-type name="n">double</parameter-type>
+			<result-type>int</result-type>
+			<describe>取整</describe>
+			<function-type>2</function-type>
+		</function>
+		<!-- 数学函数——大于n的最小整数 -->
+		<!-- @return int -->
+		<function name="Ceil" method="ceil">
+			<parameter-type name="n">double</parameter-type>
+			<result-type>int</result-type>
+			<describe>大于n的最小整数</describe>
+			<function-type>2</function-type>
+		</function>
+		<!-- 数学函数——小于n的最大整数 -->
+		<!-- @return int -->
+		<function name="Floor" method="floor">
+			<parameter-type name="n">double</parameter-type>
+			<result-type>int</result-type>
+			<describe>小于n的最大整数</describe>
+			<function-type>2</function-type>
+		</function>
+		<!-- 日期计算函数——计算两个日期的年份差,返回整数 -->
+		<!-- @return int -->
+		<function name="DateDifYears" method="dateDifYears">
+			<parameter-type name="date1">java.util.Date</parameter-type>
+			<parameter-type name="date2">java.util.Date</parameter-type>
+			<result-type>int</result-type>
+			<describe>计算两个日期的年份差</describe>
+			<function-type>3</function-type>
+		</function>
+		<!-- 日期计算函数——计算两个日期的月份差,返回整数 -->
+		<!-- @return long -->
+		<function name="DateDifMonths" method="dateDifMonths">
+			<parameter-type name="date1">java.util.Date</parameter-type>
+			<parameter-type name="date2">java.util.Date</parameter-type>
+			<result-type>long</result-type>
+			<describe>计算两个日期的月份差</describe>
+			<function-type>3</function-type>
+		</function>
+		<!-- 日期计算函数——计算两个日期的天数差,返回整数 -->
+		<!-- @return long -->
+		<function name="DateDifDays" method="dateDifDays">
+			<parameter-type name="date1">java.util.Date</parameter-type>
+			<parameter-type name="date2">java.util.Date</parameter-type>
+			<result-type>long</result-type>
+			<describe>计算两个日期的天数差</describe>
+			<function-type>3</function-type>
+		</function>
+		<!-- 日期计算函数——计算两个日期的小时差,返回整数 -->
+		<!-- @return long -->
+		<function name="DateDifHours" method="dateDifHours">
+			<parameter-type name="date1">java.util.Date</parameter-type>
+			<parameter-type name="date2">java.util.Date</parameter-type>
+			<result-type>long</result-type>
+			<describe>计算两个日期的小时差</describe>
+			<function-type>3</function-type>
+		</function>
+		<!-- 日期计算函数——计算两个日期的分钟差,返回整数 -->
+		<!-- @return long -->
+		<function name="DateDifMinutes" method="dateDifMinutes">
+			<parameter-type name="date1">java.util.Date</parameter-type>
+			<parameter-type name="date2">java.util.Date</parameter-type>
+			<result-type>long</result-type>
+			<describe>计算两个日期的分钟差</describe>
+			<function-type>3</function-type>
+		</function>
+		<!-- 日期计算函数——对一个日期增加年份,返回新的日期 -->
+		<!-- @return java.util.Date -->
+		<function name="DateAddYears" method="dateAddYears">
+			<parameter-type name="date">java.util.Date</parameter-type>
+			<parameter-type name="year">int</parameter-type>
+			<result-type>Date</result-type>
+			<describe>对一个日期增加年份</describe>
+			<function-type>3</function-type>
+		</function>
+		<!-- 日期计算函数——对一个日期增加月份,返回新的日期 -->
+		<!-- @return java.util.Date -->
+		<function name="DateAddMonths" method="dateAddMonths">
+			<parameter-type name="date">java.util.Date</parameter-type>
+			<parameter-type name="months">int</parameter-type>
+			<result-type>Date</result-type>
+			<describe>对一个日期增加月份</describe>
+			<function-type>3</function-type>
+		</function>
+		<!-- 日期计算函数——对一个日期增加天数,返回新的日期 -->
+		<!-- @return java.util.Date -->
+		<function name="DateAddDays" method="dateAddDays">
+			<parameter-type name="date">java.util.Date</parameter-type>
+			<parameter-type name="days">int</parameter-type>
+			<result-type>Date</result-type>
+			<describe>对一个日期增加天数</describe>
+			<function-type>3</function-type>
+		</function>
+		<!-- 日期计算函数——对一个日期增加小时,返回新的日期 -->
+		<!-- @return java.util.Date -->
+		<function name="DataAddHours" method="dataAddHours">
+			<parameter-type name="date">java.util.Date</parameter-type>
+			<parameter-type name="hours">int</parameter-type>
+			<result-type>Date</result-type>
+			<describe>对一个日期增加小时</describe>
+			<function-type>3</function-type>
+		</function>
+		<!-- 日期计算函数——对一个日期增加分钟,返回新的日期 -->
+		<!-- @return java.util.Date -->
+		<function name="DateAddMinutes" method="dateAddMinutes">
+			<parameter-type name="date">java.util.Date</parameter-type>
+			<parameter-type name="minutes">int</parameter-type>
+			<result-type>Date</result-type>
+			<describe>对一个日期增加分钟</describe>
+			<function-type>3</function-type>
+		</function>
+		<!-- 日期计算函数——返回当前日期的年份 -->
+		<!-- @return int -->
+		<function name="GetYear" method="getYear">
+			<parameter-type name="date">java.util.Date</parameter-type>
+			<result-type>int</result-type>
+			<describe>返回当前日期的年份</describe>
+			<function-type>3</function-type>
+		</function>
+		<!-- 日期计算函数——返回当前日期的月份 -->
+		<!-- @return int -->
+		<function name="GetMonth" method="getMonth">
+			<parameter-type name="date">java.util.Date</parameter-type>
+			<result-type>int</result-type>
+			<describe>返回当前日期的月份</describe>
+			<function-type>3</function-type>
+		</function>
+		<!-- 日期计算函数——返回当前日期的天数 -->
+		<!-- @return int -->
+		<function name="GetDay" method="getDay">
+			<parameter-type name="date">java.util.Date</parameter-type>
+			<result-type>int</result-type>
+			<describe>返回当前日期的天数</describe>
+			<function-type>3</function-type>
+		</function>
+		<!-- 日期计算函数——返回当前日期的小时数 -->
+		<!-- @return int -->
+		<function name="GetHour" method="getHour">
+			<parameter-type name="date">java.util.Date</parameter-type>
+			<result-type>int</result-type>
+			<describe>返回当前日期的小时数</describe>
+			<function-type>3</function-type>
+		</function>
+		<!-- 日期计算函数——返回当前日期的分钟数 -->
+		<!-- @return int -->
+		<function name="GetMinute" method="getMinute">
+			<parameter-type name="date">java.util.Date</parameter-type>
+			<result-type>int</result-type>
+			<describe>返回当前日期的分钟数</describe>
+			<function-type>3</function-type>
+		</function>
+		<!-- 日期计算函数——获得计算机当前日期,参数格式可选,日期格式为 2003-2-10 02:23:1 -->
+		<!-- @return java.lang.String-->
+		<function name="NOW" method="nOW">
+			<result-type>String</result-type>
+			<describe>获得计算机当前日期</describe>
+			<function-type>3</function-type>
+		</function>
+		<!-- 日期计算函数——比较日期大小,1表示日期1大于日期2 -->
+		<!-- @return int 0表示相等; -1表示日期1小于日期2-->
+		<function name="CompareDate" method="compareDate">
+			<parameter-type name="date1">java.util.Date</parameter-type>
+			<parameter-type name="date2">java.util.Date</parameter-type>
+			<result-type>int</result-type>
+			<describe>比较日期大小</describe>
+			<function-type>3</function-type>
+		</function>
+		<!-- 日期计算函数——检测当前输入的日期是否有效 -->
+		<!-- @return java.lang.String -->
+		<function name="IsValiDate" method="isValiDate">
+			<parameter-type name="date">java.lang.Object</parameter-type>
+			<result-type>String</result-type>
+			<describe>检测当前输入的日期是否有效</describe>
+			<function-type>3</function-type>
+		</function>
+		<!-- 日期计算函数——计算两个日期的星期之差 返回整数 -->
+		<!-- @return int -->
+		<function name="GetMonthSpan" method="getMonthSpan">
+			<parameter-type name="date1">java.util.Date</parameter-type>
+			<parameter-type name="date2">java.util.Date</parameter-type>
+			<result-type>int</result-type>
+			<describe>计算两个日期的星期之差</describe>
+			<function-type>3</function-type>
+		</function>
+	</bean>
+
+</function-configuration>

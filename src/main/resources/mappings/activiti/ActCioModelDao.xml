@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ciocem.activiti.dao.ActCioModelDao">
+
+	<sql id="actCioModelColumns">
+		a.id AS "id",
+		a.model_id AS "modelId",
+		a.model_key AS "modelKey",
+		a.model_name AS "modelName",
+		a.deployment_id AS "deploymentId",
+		a.create_date AS "createDate",
+		a.create_by AS "createBy.id",
+		a.update_date AS "updateDate",
+		a.update_by AS "updateBy.id",
+		a.remarks AS "remarks",
+		a.model_no AS "modelNo"
+	</sql>
+	
+    
+	<select id="get" resultType="ActCioModel" >
+		SELECT 
+			<include refid="actCioModelColumns"/>
+		FROM act_cio_model a
+		WHERE a.id = #{id}
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO act_cio_model(
+			id,
+			model_id,
+			model_key,
+			model_name,
+			deployment_id,
+			create_date,
+			create_by,
+			update_date,
+			update_by,
+			remarks,
+			model_no
+		) VALUES (
+			#{id},
+			#{modelId},
+			#{modelKey},
+			#{modelName},
+			#{deploymentId},
+			#{createDate},
+			#{createBy.id},
+			#{updateDate},
+			#{updateBy.id},
+			#{remarks},
+			#{modelNo}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE act_cio_model
+		SET 	
+			model_id = #{modelId},
+			model_key = #{modelKey},
+			model_name = #{modelName},
+			deployment_id = #{deploymentId},
+			update_date = #{updateDate},
+			update_by = #{updateBy.id},
+			remarks = #{remarks},
+			model_no = #{modelNo}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM act_cio_model WHERE id = #{id};
+		DELETE FROM act_cio_model_module_rel WHERE cio_model_id=#{id};
+	</update>
+	
+	<select id="findList" resultType="ActCioModel" >
+		SELECT
+		<include refid="actCioModelColumnsMore"/>
+		<include refid="actCioModelColumns"/>
+		FROM act_cio_model a
+		<include refid="actCioModelJoins"/> 
+		<where>
+
+		</where>
+	</select>
+	
+	<select id="getVOById" resultType="com.ciocem.activiti.vo.ActCioModelVO" >
+		SELECT
+		<include refid="actCioModelColumnsMore"/>
+		<include refid="actCioModelColumns"/>
+		FROM act_cio_model a
+			<include refid="actCioModelJoins"/> 
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findListByVO" resultType="com.ciocem.activiti.vo.ActCioModelVO" >
+		SELECT 
+			<include refid="actCioModelColumns"/>
+		FROM act_cio_model a
+			<include refid="actCioModelJoins"/> 
+		<where>
+			<include refid="actCioModelWhere"/>
+		</where>
+	</select>
+	
+	<select id="getListByPage" resultType="com.ciocem.activiti.vo.ActCioModelVO" >
+		SELECT
+		<include refid="actCioModelColumnsMore"/>
+		<include refid="actCioModelColumns"/>
+		FROM
+		<choose>
+			<when test="entity.dbName == 'mssql'">
+				(select ROW_NUMBER() OVER( order by a.model_no asc) as 'rownum', a.* from act_cio_model a
+				<include refid="actCioModelJoins"/>
+				<where>
+				 	 <include refid="actCioModelWhere"/> 
+				</where>
+				) a
+			</when>
+			<otherwise>
+				act_cio_model a
+			</otherwise>
+		</choose>
+		<include refid="actCioModelJoins"/>
+		<where>
+			 <include refid="actCioModelWhere"/> 
+			<if test="entity.dbName == 'mssql'">AND rownum between ${page.rowNumStart}  and ${page.rowNumEnd}</if>
+		</where>
+		<if test="entity.dbName == 'mysql'">LIMIT ${page.recordStart},${page.pageSize}</if>
+		ORDER BY modelNo ASC
+	</select>
+
+	<select id="getTotalByPage" parameterType="java.util.Map" resultType="java.lang.Integer">
+		SELECT
+		COUNT(1)
+		FROM act_cio_model a
+		<include refid="actCioModelJoins"/> 
+		<where>
+			 <include refid="actCioModelWhere"/> 
+		</where>
+	</select>
+	 
+    <sql id="actCioModelColumnsMore">
+		u.module_type as 'moduleType',
+		u.module_name AS "moduleName",
+		u.id AS "moduleId",
+		rd.DEPLOY_TIME_ AS "deployTime",
+	</sql>
+	<sql id="actCioModelJoins">
+		LEFT JOIN ACT_CIO_MODEL_MODULE_REL mr ON a.id = mr.cio_model_id
+		LEFT JOIN ACT_CIO_MODULE u ON u.id = mr.cio_module_id
+		LEFT JOIN ACT_RE_DEPLOYMENT rd ON rd.ID_ = a.deployment_id
+	</sql>
+	<sql id="actCioModelWhere">
+		<if test="entity.keyword != null and entity.keyword != ''">
+			AND a.model_id LIKE
+			<if test="entity.dbName == 'oracle'">'%'||#{entity.keyword}||'%'</if>
+			<if test="entity.dbName == 'mssql'">'%'+#{entity.keyword}+'%'</if>
+			<if test="entity.dbName == 'mysql'">concat('%',#{entity.keyword},'%')</if>
+			OR a.model_key LIKE
+			<if test="entity.dbName == 'oracle'">'%'||#{entity.keyword}||'%'</if>
+			<if test="entity.dbName == 'mssql'">'%'+#{entity.keyword}+'%'</if>
+			<if test="entity.dbName == 'mysql'">concat('%',#{entity.keyword},'%')</if>
+			OR a.model_name LIKE
+			<if test="entity.dbName == 'oracle'">'%'||#{entity.keyword}||'%'</if>
+			<if test="entity.dbName == 'mssql'">'%'+#{entity.keyword}+'%'</if>
+			<if test="entity.dbName == 'mysql'">concat('%',#{entity.keyword},'%')</if>
+		</if>
+		<if test="entity.modelKey != null and entity.modelKey != ''">
+			AND a.model_key  = #{entity.modelKey}
+		</if>
+		<if test="entity.modelName != null and entity.modelName != ''">
+			AND a.model_name LIKE
+			<if test="entity.dbName == 'oracle'">'%'||#{entity.modelName}||'%'</if>
+			<if test="entity.dbName == 'mssql'">'%'+#{entity.modelName}+'%'</if>
+			<if test="entity.dbName == 'mysql'">concat('%',#{entity.modelName},'%')</if>
+		</if>
+		<if test="entity.modelId != null and entity.modelId != ''">
+			AND a.model_id = #{entity.modelId}
+		</if>
+		<if test="entity.moduleType != null and entity.moduleType != ''">
+			AND u.module_type  = #{entity.moduleType}
+		</if>
+		<if test="entity.menuIdLs != null and entity.menuIdLs != ''">
+			AND u.menu_id  IN
+			<foreach collection="entity.menuIdLs" index="index" item="menuId" open="("
+					 separator="," close=")">
+				#{menuId}
+			</foreach>
+		</if>
+	</sql>
+	
+</mapper>

@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ciocem.activiti.dao.ActCioDuplicateDao">
+    
+	<sql id="actCioDuplicateColumns">
+		a.id AS "id",
+		a.process_instance_id AS "processInstanceId",
+		a.duplicate_from_user_id AS "duplicateFromUserId",
+		a.duplicate_to_user_id AS "duplicateToUserId",
+		a.duplicate_form_url AS "duplicateFormUrl",
+		a.status AS "status",
+		a.org_id AS "orgId",
+		a.create_date AS "createDate",
+		a.create_by AS "createBy.id",
+		a.update_date AS "updateDate",
+		a.update_by AS "updateBy.id",
+		a.remarks AS "remarks"
+	</sql>
+	
+	<select id="get" resultType="ActCioDuplicate">
+		SELECT 
+			<include refid="actCioDuplicateColumns"/>
+		FROM ACT_CIO_DUPLICATE a
+		WHERE a.id = #{id}
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO ACT_CIO_DUPLICATE(
+			id,
+			process_instance_id,
+			duplicate_from_user_id,
+			duplicate_to_user_id,
+			duplicate_form_url,
+			status,
+			org_id,
+			create_date,
+			create_by,
+			update_date,
+			update_by,
+			remarks
+		) VALUES (
+			#{id},
+			#{processInstanceId},
+			#{duplicateFromUserId},
+			#{duplicateToUserId},
+			#{duplicateFormUrl},
+			#{status},
+			#{orgId},
+			#{createDate},
+			#{createBy.id},
+			#{updateDate},
+			#{updateBy.id},
+			#{remarks}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE ACT_CIO_DUPLICATE
+		SET
+			id = #{id},
+			process_instance_id = #{processInstanceId},
+			duplicate_from_user_id = #{duplicateFromUserId},
+			duplicate_to_user_id = #{duplicateToUserId},
+			duplicate_form_url = #{duplicateFormUrl},
+			status = #{status},
+			org_id = #{orgId},
+			update_date = #{updateDate},
+			update_by = #{updateBy.id},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM ACT_CIO_DUPLICATE WHERE id = #{id}
+	</update>
+	
+	<select id="findList" resultType="ActCioDuplicate">
+		SELECT
+			<include refid="actCioDuplicateColumns"/>
+		FROM ACT_CIO_DUPLICATE a
+		<where>
+			
+		</where>
+	</select>
+	
+	<select id="getVOById" resultType="com.ciocem.activiti.vo.ActCioDuplicateVO" >
+		SELECT 
+			<include refid="actCioDuplicateColumnsMore"/> 
+			<include refid="actCioDuplicateColumns"/>
+		FROM ACT_CIO_DUPLICATE a
+			<include refid="actCioDuplicateJoins"/> 
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findListByVO" resultType="com.ciocem.activiti.vo.ActCioDuplicateVO" >
+		SELECT 
+		    <include refid="actCioDuplicateColumnsMore"/> 
+			<include refid="actCioDuplicateColumns"/>
+		FROM ACT_CIO_DUPLICATE a
+			<include refid="actCioDuplicateJoins"/> 
+		<where>
+			<include refid="actCioDuplicateWhere"/>
+		</where>
+	</select>
+	
+	<select id="getListByPage" resultType="com.ciocem.activiti.vo.ActCioDuplicateVO">
+		SELECT		
+		<choose>
+			<when test="entity.dbName == 'mssql'">
+				* FROM
+				(select ROW_NUMBER() OVER( order by a.update_date desc) as 'rownum', 
+				<include refid="actCioDuplicateColumnsMore"/> 
+				<include refid="actCioDuplicateColumns"/>
+				from ACT_CIO_DUPLICATE a
+				<include refid="actCioDuplicateJoins"/>
+				<where>
+				 	 <include refid="actCioDuplicateWhere"/> 
+				</where>
+				) a
+			</when>
+			<otherwise>
+				<include refid="actCioDuplicateColumnsMore"/> 
+				<include refid="actCioDuplicateColumns"/>
+				FROM ACT_CIO_DUPLICATE a
+				<include refid="actCioDuplicateJoins"/>
+				<include refid="actCioDuplicateWhere"/>  
+			</otherwise>
+		</choose>		
+		<where>			 
+			<if test="entity.dbName == 'mssql'">AND rownum between ${page.rowNumStart}  and ${page.rowNumEnd}</if>
+		</where>
+		<if test="entity.dbName == 'mysql'">LIMIT ${page.recordStart},${page.pageSize}</if>
+	</select>
+
+	<select id="getTotalByPage" parameterType="java.util.Map" resultType="java.lang.Integer">
+		SELECT  COUNT(1)
+		FROM ACT_CIO_DUPLICATE a
+		<include refid="actCioDuplicateJoins"/> 
+		<where>
+			 <include refid="actCioDuplicateWhere"/> 
+		</where>
+	</select>
+	 
+    <sql id="actCioDuplicateColumnsMore"></sql>
+	<sql id="actCioDuplicateJoins"></sql>
+	<sql id="actCioDuplicateWhere">
+		<if test = "entity.processInstanceId != null and entity.processInstanceId !=''">
+			AND a.process_instance_id = #{entity.processInstanceId}
+		</if>
+		<if test = "entity.duplicateFromUserId != null and entity.duplicateFromUserId !=''">
+			AND a.duplicate_from_user_id = #{entity.duplicateFromUserId}
+		</if>
+		<if test = "entity.duplicateToUserId != null and entity.duplicateToUserId !=''">
+			AND a.duplicate_to_user_id  = #{entity.duplicateToUserId}
+		</if>
+	</sql>
+</mapper>

@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ciocem.modules.sys.dao.UserPermissionDao">
+    
+	<sql id="userPermissionColumns">
+		a.id AS "id",
+		a.permission AS "permission",
+		a.right_id AS "rightId",
+		a.user_id AS "userId",
+		a.org_id AS "orgId"
+	</sql>
+	
+    
+	<select id="get" resultType="UserPermission" >
+		SELECT 
+			<include refid="userPermissionColumns"/>
+		FROM sys_user_permission a
+		WHERE a.id = #{id}
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sys_user_permission(
+			id,
+			permission,
+			right_id,
+			user_id,
+			org_id
+		) VALUES (
+			#{id},
+			#{permission},
+			#{rightId},
+			#{userId},
+			#{orgId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE sys_user_permission
+		SET 	
+			permission = #{permission},
+			right_id = #{rightId},
+			user_id = #{userId},
+			org_id = #{orgId}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM sys_user_permission
+		WHERE id = #{id}
+	</update>
+	
+	<select id="findList" resultType="UserPermission" >
+		SELECT 
+			<include refid="userPermissionColumns"/>
+		FROM sys_user_permission a
+		<where>
+		
+		</where>
+	</select>
+	
+	<select id="getVOById" resultType="com.ciocem.modules.sys.vo.UserPermissionVO" >
+		SELECT 
+			<include refid="userPermissionColumnsMore"/> 
+			<include refid="userPermissionColumns"/>
+		FROM sys_user_permission a
+			<include refid="userPermissionJoins"/> 
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findListByVO" resultType="com.ciocem.modules.sys.vo.UserPermissionVO" >
+		SELECT 
+		    <include refid="userPermissionColumnsMore"/> 
+			<include refid="userPermissionColumns"/>
+		FROM sys_user_permission a
+			<include refid="userPermissionJoins"/> 
+		<where>
+			<include refid="userPermissionWhere"/>
+		</where>
+	</select>
+	
+	<select id="getListByPage" resultType="com.ciocem.modules.sys.vo.UserPermissionVO" >
+		SELECT		
+		<choose>
+			<when test="entity.dbName == 'mssql'">
+				* FROM
+				(select ROW_NUMBER() OVER( order by a.id desc) as 'rownum', 
+				<include refid="userPermissionColumnsMore"/> 
+				<include refid="userPermissionColumns"/>
+				from sys_user_permission a
+				<include refid="userPermissionJoins"/>
+				<where>
+				 	 <include refid="userPermissionWhere"/> 
+				</where>
+				) a
+			</when>
+			<otherwise>
+				<include refid="userPermissionColumnsMore"/> 
+				<include refid="userPermissionColumns"/>
+				FROM sys_user_permission a
+				<include refid="userPermissionJoins"/>
+				<include refid="userPermissionWhere"/>  
+			</otherwise>
+		</choose>		
+		<where>			 
+			<if test="entity.dbName == 'mssql'">AND rownum between ${page.rowNumStart}  and ${page.rowNumEnd}</if>
+		</where>
+		<if test="entity.dbName == 'mysql'">LIMIT ${page.recordStart},${page.pageSize}</if>
+	</select>
+
+	<select id="getTotalByPage" parameterType="java.util.Map" resultType="java.lang.Integer">
+		SELECT
+		COUNT(1)
+		FROM sys_user_permission a
+		<include refid="userPermissionJoins"/> 
+		<where>
+			 <include refid="userPermissionWhere"/> 
+		</where>
+	</select>
+	 
+    <sql id="userPermissionColumnsMore"></sql>
+	<sql id="userPermissionJoins"></sql>
+	<sql id="userPermissionWhere"></sql>
+	<insert id="insertUserPermission">
+		INSERT INTO sys_user_permission (id, permission, right_id, user_id, org_id) VALUES
+		<foreach collection="userPermission" item="item" index="index" separator =",">
+			 (#{item.id},#{item.permission},#{item.rightId},#{item.userId},#{item.orgId})
+		</foreach>
+	</insert>
+	<delete id="delUserPermission">
+		DELETE FROM sys_user_permission WHERE org_id=#{entity.orgId} AND user_id=#{entity.userId} AND NOT EXISTS(
+		SELECT 1 FROM (
+		SELECT right_id FROM sys_permission WHERE org_id=#{entity.orgId} AND bustype='1' AND busid=#{entity.userId}
+		UNION
+		SELECT right_id FROM sys_permission WHERE org_id=#{entity.orgId} AND bustype='2' AND busid IN (
+		SELECT role_id FROM sys_role_user WHERE org_id=#{entity.orgId} AND user_id=#{entity.userId}
+		)) right_tab WHERE right_id=sys_user_permission.right_id)
+	</delete>	
+	<select id="getUserPermissionList" resultType="java.lang.String">
+		SELECT DISTINCT permission FROM sys_user_permission WHERE org_id=#{orgId} AND user_id=#{userId}
+	</select>
+	<select id="getAdminPermissionList" resultType="java.lang.String">
+		SELECT DISTINCT permission FROM sys_menu WHERE permission IS NOT NULL AND permission!=''
+	</select>
+</mapper>

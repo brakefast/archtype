@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ciocem.modules.hr.dao.OrganizationDao">
+
+    <sql id="organizationColumns">
+		a.id AS "id",
+		a.organization_no AS "organizationNo",
+		a.organization_name AS "organizationName",
+		a.corporation_flag AS "corporationFlag",
+		a.parent_organization_id AS "parentOrganizationId",
+		a.employee_files_id AS "employeeFilesId",
+		a.project_info_id AS "projectInfoId",
+		a.is_project_organization AS "isProjectOrganization",
+		a.corporate_organization_id AS "corporateOrganizationId",
+		a.phone_no AS "phoneNo",
+		a.fax_no AS "faxNo",
+		a.email AS "email",
+		a.address AS "address",
+		a.zip_code AS "zipCode",
+		a.create_date AS "createDate",
+		a.create_by AS "createBy.id",
+		a.update_date AS "updateDate",
+		a.update_by AS "updateBy.id",
+		a.remarks AS "remarks",
+		a.sort AS "sort",
+		a.tax_flag AS "taxFlag",
+		a.tax_payer_no AS "taxPayerNo",
+		a.tax_payer_type AS "taxPayerType",
+		a.invoice_limit  AS "invoiceLimit",
+		a.tax_rate  AS "taxRate",
+		a.add_value_tax_rate  AS "addValueTaxRate",
+		a.income_tax_rate   AS "incomeTaxRate",
+		a.tax_area AS "taxArea",
+		a.levy_way AS "levyWay",
+		a.type AS "type",
+		a.state_flag AS "stateFlag"
+	</sql>
+
+    <select id="get" resultType="Organization">
+        SELECT
+        <include refid="organizationColumns"/>
+        FROM hr_organization a
+        WHERE a.id = #{id}
+    </select>
+
+    <insert id="insert">
+		INSERT INTO hr_organization(
+			id,
+			organization_no,
+			organization_name,
+			corporation_flag,
+			parent_organization_id,
+			employee_files_id,
+			project_info_id,
+			is_project_organization,
+			corporate_organization_id,
+			phone_no,
+			fax_no,
+			email,
+			address,
+			zip_code,
+			create_date,
+			create_by,
+			update_date,
+			update_by,
+			remarks,
+			sort,
+			tax_flag,
+			tax_payer_no,
+			tax_payer_type,
+			invoice_limit,
+			tax_rate,
+			add_value_tax_rate,
+			income_tax_rate,
+			tax_area,
+			levy_way,
+			type,
+			state_flag
+		) VALUES (
+			#{id},
+			#{organizationNo},
+			#{organizationName},
+			#{corporationFlag},
+			#{parentOrganizationId},
+			#{employeeFilesId},
+			#{projectInfoId},
+			#{isProjectOrganization},
+            #{corporateOrganizationId},
+			#{phoneNo},
+			#{faxNo},
+			#{email},
+			#{address},
+			#{zipCode},
+			#{createDate},
+			#{createBy.id},
+			#{updateDate},
+			#{updateBy.id},
+			#{remarks},
+			#{sort},
+			#{taxFlag},
+	        #{taxPayerNo},
+		    #{taxPayerType},
+		    #{invoiceLimit},
+		    #{taxRate},
+		    #{addValueTaxRate},
+		    #{incomeTaxRate},
+		    #{taxArea},
+		    #{levyWay},
+		    #{type},
+		    #{stateFlag}
+		)
+	</insert>
+
+    <update id="update">
+		UPDATE hr_organization
+		SET 	
+			organization_no = #{organizationNo},
+			organization_name = #{organizationName},
+			corporation_flag = #{corporationFlag},
+			parent_organization_id = #{parentOrganizationId},
+			employee_files_id = #{employeeFilesId},
+			project_info_id = #{projectInfoId},
+			is_project_organization = #{isProjectOrganization},
+			corporate_organization_id = #{corporateOrganizationId},
+			phone_no = #{phoneNo},
+			fax_no = #{faxNo},
+			email = #{email},
+			address = #{address},
+			zip_code = #{zipCode},
+			update_date = #{updateDate},
+			update_by = #{updateBy.id},
+			remarks = #{remarks},
+			sort=#{sort},
+			tax_flag=#{taxFlag},
+			tax_payer_no=#{taxPayerNo},
+			tax_payer_type=#{taxPayerType},
+			invoice_limit=#{invoiceLimit},
+			tax_rate=#{taxRate},
+			add_value_tax_rate=#{addValueTaxRate},
+			income_tax_rate=#{incomeTaxRate},
+			tax_area=#{taxArea},
+			levy_way = #{levyWay},
+			type = #{type},
+			state_flag = #{stateFlag}
+		WHERE id = #{id}
+	</update>
+
+    <update id="delete">
+		DELETE FROM hr_organization
+		WHERE id = #{id}
+	</update>
+
+    <select id="findList" resultType="Organization">
+        SELECT
+        <include refid="organizationColumns"/>
+        FROM hr_organization a
+        <where>
+            <if test="parentOrganizationId != null and parentOrganizationId != ''">
+                AND a.parent_organization_id= #{parentOrganizationId}
+            </if>
+            <if test="organizationNo != null and organizationNo != ''">
+                AND a.organization_no= #{organizationNo}
+            </if>
+            <if test="id != null and id != ''">
+                AND a.id !=#{id}
+            </if>
+        </where>
+    </select>
+
+    <select id="getVOById" resultType="com.ciocem.modules.hr.vo.OrganizationVO">
+        SELECT
+        <include refid="organizationColumns"/>
+        FROM hr_organization a
+        WHERE a.id = #{id}
+    </select>
+
+    <select id="findListByVO" resultType="com.ciocem.modules.hr.vo.OrganizationVO">
+        SELECT
+        <include refid="organizationColumns"/>
+        FROM hr_organization a
+        <where>
+            <if test="entity.id != null and entity.id != ''">
+                AND a.id = #{entity.id}
+            </if>
+            <if test="entity.eqNumber != null and entity.eqNumber != ''">
+                AND a.organization_no= #{entity.eqNumber}
+            </if>
+            <if test="entity.notEqId != null and entity.notEqId != ''">
+                AND a.id !=#{entity.notEqId}
+            </if>
+            <if test="entity.judgeCorporationId != null and entity.judgeCorporationId != ''">
+                AND a.parent_organization_id =#{entity.judgeCorporationId}
+            </if>
+            <if test="entity.organizationName != null and entity.organizationName != ''">
+                AND a.organization_name =#{entity.organizationName}
+            </if>
+
+        </where>
+    </select>
+
+    <select id="getListByPage" resultType="com.ciocem.modules.hr.vo.OrganizationVO">
+        SELECT
+        <include refid="organizationColumns"/>
+        FROM
+        <choose>
+            <when test="entity.dbName == 'mssql'">
+                (select ROW_NUMBER() OVER( order by update_date desc) as 'rownum', * from hr_organization a
+                <where>
+                    <if test="entity.type != null and entity.type != ''">
+                        AND a.type = #{entity.type}
+                    </if>
+                    <if test="entity.keyword != null and entity.keyword != ''">
+                        <bind name="keyword" value="'%' + entity.keyword + '%'"/>
+                        and (a.organization_no LIKE #{keyword} OR a.organization_name LIKE #{keyword} )
+                    </if>
+                </where>
+                ) a
+            </when>
+            <otherwise>
+                hr_organization a
+                <where>
+                    <if test="entity.type != null and entity.type != ''">
+                        AND a.type = #{entity.type}
+                    </if>
+                    <if test="entity.keyword != null and entity.keyword != ''">
+                        <bind name="keyword" value="'%' + entity.keyword + '%'"/>
+                        and (a.organization_no LIKE #{keyword} OR a.organization_name LIKE #{keyword} )
+                    </if>
+                </where>
+            </otherwise>
+        </choose>
+        <where>
+
+            <if test="entity.dbName == 'mssql'">AND rownum between ${page.rowNumStart} and ${page.rowNumEnd}</if>
+        </where>
+        <if test="entity.dbName == 'mysql'">LIMIT ${page.recordStart},${page.pageSize}</if>
+    </select>
+
+    <select id="getTotalByPage" parameterType="java.util.Map" resultType="java.lang.Integer">
+        SELECT
+        COUNT(1)
+        FROM hr_organization a
+        <where>
+            <if test="entity.type != null and entity.type != ''">
+                AND a.type = #{entity.type}
+            </if>
+            <if test="entity.keyword != null and entity.keyword != ''">
+                <bind name="keyword" value="'%' + entity.keyword + '%'"/>
+                and (a.organization_no LIKE #{keyword} OR a.organization_name LIKE #{keyword} )
+            </if>
+        </where>
+    </select>
+
+    <select id="getSubOrgLs" resultType="Organization">
+        <choose>
+            <when test="dbName != null and dbName == 'mysql'.toString()">
+
+                <choose>
+                    <when test="id != null and id != ''">
+                        SELECT * FROM hr_organization WHERE id IN (
+                        SELECT id FROM hr_organization  WHERE  FIND_IN_SET(id, getSubOrgLs(#{id}))
+                        )
+                    </when>
+                    <otherwise>
+                        SELECT * FROM hr_organization WHERE id IN (
+                        SELECT id FROM hr_organization  WHERE  FIND_IN_SET(id, getSubOrgLs('1'))
+                        )
+                    </otherwise>
+                </choose>
+                <if test="corporationFlag != null and corporationFlag != ''">
+                    AND corporation_flag = #{corporationFlag}
+                </if>
+				<!--
+ 				过滤已经停用的组织
+ 				-->
+				<!--<if test="state_flag != null and state_flag != ''">-->
+					<!--AND state_flag = #{state_flag}-->
+				<!--</if>-->
+            </when>
+            <otherwise>
+                WITH getOrgChild(id,organization_no,organization_name,parent_organization_id,corporation_flag,is_project_organization,
+                corporate_organization_id,project_info_id,sort,tax_flag,tax_payer_no, tax_payer_type,invoice_limit,
+                tax_rate,add_value_tax_rate, income_tax_rate, tax_area, levy_way,state_flag) as (
+                SELECT id,organization_no,organization_name,parent_organization_id,corporation_flag,is_project_organization,
+                corporate_organization_id,project_info_id,sort,tax_flag,tax_payer_no, tax_payer_type,invoice_limit,
+                tax_rate,add_value_tax_rate, income_tax_rate, tax_area, levy_way,state_flag
+                FROM hr_organization
+                <where>
+                    <choose>
+                        <when test="id != null and id != ''">
+                            AND id = #{id}
+                        </when>
+                        <otherwise>
+                            AND id = '1'
+                        </otherwise>
+                    </choose>
+                    <if test="corporationFlag != null and corporationFlag != ''">
+                        AND corporation_flag = #{corporationFlag}
+                    </if>
+                </where>
+                UNION ALL
+                SELECT o1.id,o1.organization_no,o1.organization_name,o1.parent_organization_id,o1.corporation_flag,o1.is_project_organization,
+                o1.corporate_organization_id,o1.project_info_id,o1.sort,o1.tax_flag,o1.tax_payer_no, o1.tax_payer_type,
+                o1.invoice_limit, o1.tax_rate, o1.add_value_tax_rate, o1.income_tax_rate, o1.tax_area, o1.levy_way,o1.state_flag
+                FROM hr_organization o1,getOrgChild
+                <where>
+                    o1.parent_organization_id = getOrgChild.id
+                    <if test="corporationFlag != null and corporationFlag != ''">
+                        AND o1.corporation_flag = ${corporationFlag}
+                    </if>
+                </where>
+                )
+                SELECT * FROM getOrgChild ORDER by sort,organization_name;
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="getCompany" resultType="Organization">
+	  WITH getOrgParent(id,organization_no,organization_name,parent_organization_id,corporation_flag) as (
+          SELECT id,organization_no,organization_name,parent_organization_id,corporation_flag
+          FROM hr_organization
+          WHERE id = #{id}
+          UNION ALL
+          SELECT o1.id,o1.organization_no,o1.organization_name,o1.parent_organization_id,o1.corporation_flag
+          FROM hr_organization o1,getOrgParent
+          WHERE o1.id = getOrgParent.parent_organization_id
+        )
+        SELECT * FROM getOrgParent WHERE corporation_flag='1';
+	</select>
+
+    <update id="update4Lock">
+        UPDATE hr_organization  SET remarks = remarks WHERE id =#{id}
+    </update>
+    
+    <select id="getSubTreeNode" resultType="com.ciocem.modules.hr.vo.OrgTreeNodeVO">
+    	SELECT id, 1 AS isParent,organization_name AS name, 0 AS "open" FROM hr_organization WHERE parent_organization_id=#{id} AND EXISTS(
+		SELECT 1 FROM hr_organization b WHERE b.parent_organization_id=hr_organization.id
+		)
+		UNION ALL
+		SELECT id, 0 AS isParent,organization_name AS name, 0 AS "open" FROM hr_organization WHERE parent_organization_id=#{id} AND NOT EXISTS(
+		SELECT 1 FROM hr_organization b WHERE b.parent_organization_id=hr_organization.id
+		)
+    </select>
+
+    <update id="syncInfo">
+        update hr_organization set hr_organization.organization_no=e.enterprise_no,hr_organization.organization_name=e.enterprise_name
+        from sys_enterprise e
+        where e.id=hr_organization.id and hr_organization.type = '3'
+    </update>
+
+    <!--
+
+DELIMITER $$
+
+CREATE  FUNCTION `getSubOrgLs`(rootId varchar(36)) RETURNS varchar(5000) CHARSET utf8
+BEGIN
+	DECLARE sParentList VARCHAR(5000);
+	DECLARE sParentTemp VARCHAR(5000);
+	SET sParentTemp =cast(rootId as CHAR);
+	WHILE sParentTemp is not null DO
+	 IF (sParentList is not null) THEN
+	  SET sParentList = concat(sParentTemp,',',sParentList);
+	 ELSE
+	  SET sParentList = concat(sParentTemp);
+	 END IF;
+         SELECT group_concat(parent_organization_id) INTO sParentTemp FROM hr_organization where FIND_IN_SET(id,sParentTemp)>0;
+        END WHILE;
+      RETURN sParentList;
+    END$$
+
+DELIMITER ;
+    -->
+</mapper>

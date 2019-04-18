@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ciocem.modules.base.dao.ExcelColumnDao">
+    
+	<sql id="excelColumnColumns">
+		a.id AS "id",
+		a.column_no AS "columnNo",
+		a.column_name AS "columnName",
+		a.column_type AS "columnType",
+		a.type AS "type",
+		a.rel_table_name AS "relTableName",
+		a.rel_column_name AS "relColumnName",
+		a.rel_dict_name AS "relDictName",
+		a.excel_template_id AS "excelTemplateId",
+		a.column_remark AS "columnRemark",
+		a.column_rule AS "columnRule",
+		a.create_date AS "createDate",
+		a.create_by AS "createBy.id",
+		a.update_date AS "updateDate",
+		a.update_by AS "updateBy.id",
+		a.remarks AS "remarks"
+	</sql>
+	
+    
+	<select id="get" resultType="ExcelColumn" >
+		SELECT 
+			<include refid="excelColumnColumns"/>
+		FROM cio_excel_column a
+		WHERE a.id = #{id}
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO cio_excel_column(
+			id,
+			column_no,
+			column_name,
+			column_type,
+			excel_template_id,
+			type,
+			rel_table_name,
+			rel_column_name,
+			rel_dict_name,
+			column_remark,
+			column_rule,
+			create_date,
+			create_by,
+			update_date,
+			update_by,
+			remarks
+		) VALUES (
+			#{id},
+			#{columnNo},
+			#{columnName},
+			#{columnType},
+			#{excelTemplateId},
+			#{type},
+			#{relTableName},
+			#{relColumnName},
+			#{relDictName},
+			#{columnRemark},
+			#{columnRule},
+			#{createDate},
+			#{createBy.id},
+			#{updateDate},
+			#{updateBy.id},
+			#{remarks}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE cio_excel_column
+		SET 	
+			column_no = #{columnNo},
+			column_name = #{columnName},
+			column_type = #{columnType},
+			excel_template_id = #{excelTemplateId},
+			type = #{type},
+			rel_table_name = #{relTableName},
+			rel_column_name = #{relColumnName},
+			rel_dict_name = #{relDictName},
+			column_remark = #{columnRemark},
+			column_rule = #{columnRule},
+			update_date = #{updateDate},
+			update_by = #{updateBy.id},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM cio_excel_column
+		WHERE id = #{id}
+	</update>
+
+	<update id="deleteExcelColumnByTemplateId">
+		DELETE FROM cio_excel_column
+		WHERE excel_template_id = #{excelTemplateId}
+	</update>
+
+	
+	<select id="findList" resultType="ExcelColumn" >
+		SELECT 
+			<include refid="excelColumnColumns"/>
+		FROM cio_excel_column a
+		<where>
+		
+		</where>
+	</select>
+	
+	<select id="getVOById" resultType="com.ciocem.modules.base.vo.ExcelColumnVO" >
+		SELECT 
+			<include refid="excelColumnColumnsMore"/> 
+			<include refid="excelColumnColumns"/>
+		FROM cio_excel_column a
+			<include refid="excelColumnJoins"/> 
+		WHERE a.id = #{id}
+		order by a.column_no asc
+	</select>
+	
+	<select id="findListByVO" resultType="com.ciocem.modules.base.vo.ExcelColumnVO" >
+		SELECT 
+		    <include refid="excelColumnColumnsMore"/> 
+			<include refid="excelColumnColumns"/>
+		FROM cio_excel_column a
+			<include refid="excelColumnJoins"/> 
+		<where>
+			<include refid="excelColumnWhere"/>
+		</where>
+		order by a.column_no asc
+	</select>
+	
+	<select id="getListByPage" resultType="com.ciocem.modules.base.vo.ExcelColumnVO" >
+		SELECT
+		<include refid="excelColumnColumnsMore"/> 
+		<include refid="excelColumnColumns"/>
+		FROM 
+		<choose>
+			<when test="entity.dbName == 'mssql'">
+				(select ROW_NUMBER() OVER( order by a.column_no asc) as 'rownum', a.* from cio_excel_column a
+				<include refid="excelColumnJoins"/>
+				<where>
+				 	 <include refid="excelColumnWhere"/> 
+				</where>
+				) a
+			</when>
+			<otherwise>
+				cio_excel_column a
+			</otherwise>
+		</choose>
+		<include refid="excelColumnJoins"/>
+		<where>
+			 <include refid="excelColumnWhere"/> 
+			<if test="entity.dbName == 'mssql'">AND rownum between ${page.rowNumStart}  and ${page.rowNumEnd}</if>
+		</where>
+		<if test="entity.dbName == 'mysql'">LIMIT ${page.recordStart},${page.pageSize}</if>
+	</select>
+
+	<select id="getTotalByPage" parameterType="java.util.Map" resultType="java.lang.Integer">
+		SELECT
+		COUNT(1)
+		FROM cio_excel_column a
+		<include refid="excelColumnJoins"/> 
+		<where>
+			 <include refid="excelColumnWhere"/> 
+		</where>
+	</select>
+	 
+    <sql id="excelColumnColumnsMore"></sql>
+	<sql id="excelColumnJoins"></sql>
+	<sql id="excelColumnWhere">
+		<if test="entity.excelTemplateId != null and entity.excelTemplateId != ''">
+			AND a.excel_template_id = #{entity.excelTemplateId}
+		</if>
+	</sql>
+	
+</mapper>
