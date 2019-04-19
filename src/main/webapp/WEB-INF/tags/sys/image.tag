@@ -1,5 +1,5 @@
 <%@ tag language="java" pageEncoding="UTF-8"%>
-<%@ include file="/webpage/include/taglib.jsp"%>
+<%@ include file="/page/include/taglib.jsp"%>
 <%@ attribute name="src" type="java.lang.String" required="true" description="图片链接"%>
 <%@ attribute name="height" type="java.lang.String" required="false" description="图片高度"%>
 <%@ attribute name="width" type="java.lang.String" required="false" description="图片宽度"%>

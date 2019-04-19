@@ -1,5 +1,5 @@
 <%@ tag language="java" pageEncoding="UTF-8" %>
-<%@ include file="/webpage/include/taglib.jsp" %>
+<%@ include file="/page/include/taglib.jsp" %>
 
 <%@ attribute name="checked" type="java.lang.String" required="false" description="是否显示复选框，如果不需要返回父节点，请设置notAllowSelectParent为true" %>
 <%@ attribute name="extId" type="java.lang.String" required="false" description="排除掉的编号（不能选择的编号）" %>

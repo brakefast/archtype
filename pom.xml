@@ -17,11 +17,11 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <junit.version>4.11</junit.version>
-        <activemq.version>5.14.4</activemq.version>
+        <activemq.version>5.15.9</activemq.version>
         <activiti.version>5.22.0</activiti.version>
         <batik.version>1.7</batik.version>
-        <cxf.version>2.7.6</cxf.version>
-        <spring.version>4.2.1.RELEASE</spring.version>
+        <cxf.version>3.1.16</cxf.version>
+        <spring.version>4.3.18.RELEASE</spring.version>
         <mybatis.version>3.2.8</mybatis.version>
         <mybatis.spring.version>1.2.2</mybatis.spring.version>
         <mysql.version>5.1.30</mysql.version>
@@ -31,6 +31,12 @@
         <aspectjweaver.version>1.8.13</aspectjweaver.version>
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
+        <!--moderate severity-->
+        <!--<activemq.version>5.14.4</activemq.version>-->
+        <!--high severity-->
+        <!--<cxf.version>2.7.6</cxf.version>-->
+        <!--moderate severity-->
+        <!--<spring.version>4.2.1.RELEASE</spring.version>-->
     </properties>
 
     <dependencies>
@@ -72,6 +78,13 @@
             <groupId>org.apache.activemq</groupId>
             <artifactId>activemq-web</artifactId>
             <version>${activemq.version}</version>
+            <!-- 去除activemq-all版本 -->
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.activemq</groupId>
+                    <artifactId>activemq-all</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.activiti/activiti-bpmn-converter -->
         <dependency>
@@ -367,6 +380,18 @@
             <artifactId>commons-cli</artifactId>
             <version>1.2</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/commons-codec/commons-codec -->
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.9</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/commons-collections/commons-collections -->
+        <dependency>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+            <version>3.2.1</version>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/commons-dbcp/commons-dbcp -->
         <dependency>
             <groupId>commons-dbcp</groupId>
@@ -389,7 +414,9 @@
         <dependency>
             <groupId>commons-fileupload</groupId>
             <artifactId>commons-fileupload</artifactId>
-            <version>1.3</version>
+            <version>1.3.3</version>
+            <!--high severity-->
+            <!--<version>1.3</version>-->
         </dependency>
         <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
         <dependency>
@@ -439,13 +466,6 @@
             <artifactId>core</artifactId>
             <version>2.2</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.apache.cxf/cxf -->
-        <!--<dependency>-->
-            <!--<groupId>org.apache.cxf</groupId>-->
-            <!--<artifactId>cxf</artifactId>-->
-            <!--<version>2.6.0</version>-->
-            <!--<type>pom</type>-->
-        <!--</dependency>-->
         <!-- https://mvnrepository.com/artifact/org.apache.cxf/cxf -->
         <dependency>
             <groupId>org.apache.cxf</groupId>
@@ -573,7 +593,9 @@
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
-            <version>1.2.7</version>
+            <version>1.2.47</version>
+            <!--high severity-->
+            <!--<version>1.2.7</version>-->
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.freemarker/freemarker -->
         <dependency>
@@ -683,7 +705,9 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
-            <version>2.2.3</version>
+            <version>2.9.8</version>
+            <!--high severity-->
+            <!--<version>2.2.3</version>-->
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.codehaus.jackson/jackson-core-asl -->
         <dependency>
@@ -937,17 +961,11 @@
             <artifactId>shiro-spring</artifactId>
             <version>${shiro.version}</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.apache.shiro/shiro-web -->
-        <dependency>
-            <groupId>org.apache.shiro</groupId>
-            <artifactId>shiro-web</artifactId>
-            <version>${shiro.version}</version>
-        </dependency>
-        <!--&lt;!&ndash; https://mvnrepository.com/artifact/org.hyperic/sigar &ndash;&gt;-->
+        <!--&lt;!&ndash; https://mvnrepository.com/artifact/org.apache.shiro/shiro-web &ndash;&gt;-->
         <!--<dependency>-->
-            <!--<groupId>org.hyperic</groupId>-->
-            <!--<artifactId>sigar</artifactId>-->
-            <!--<version>1.6.4</version>-->
+            <!--<groupId>org.apache.shiro</groupId>-->
+            <!--<artifactId>shiro-web</artifactId>-->
+            <!--<version>1.2.3</version>-->
         <!--</dependency>-->
         <!-- https://mvnrepository.com/artifact/opensymphony/sitemesh -->
         <dependency>
@@ -1172,7 +1190,9 @@
         <dependency>
             <groupId>com.adobe.xmp</groupId>
             <artifactId>xmpcore</artifactId>
-            <version>5.1.2</version>
+            <version>5.1.3</version>
+            <!--moderate severity-->
+            <!--<version>5.1.2</version>-->
         </dependency>
         <!-- https://mvnrepository.com/artifact/xpp3/xpp3_min -->
         <dependency>

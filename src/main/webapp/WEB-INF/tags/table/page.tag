@@ -1,5 +1,5 @@
 <%@ tag language="java" pageEncoding="UTF-8"%>
-<%@ include file="/webpage/include/taglib.jsp"%>
+<%@ include file="/page/include/taglib.jsp"%>
 <%@ attribute name="page" type="com.ciocem.common.dao.Page" required="true"%>
 <%-- 表格分页工具栏，使用方法： 原样输出page --%>
 ${page}

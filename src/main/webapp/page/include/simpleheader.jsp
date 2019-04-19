@@ -31,7 +31,7 @@
 <link href="${ctxStatic}/js/application/jquery-notice/style.css" rel="stylesheet" />
 
 <!-- 引入layer插件 -->
-<script src="${ctxStatic}/js/application/layer-v3.0.1/layer/layer.js"></script>
+<script src="${ctxStatic}/js/application/layer/3.0.1/layer/layer.js"></script>
 <script src="${ctxStatic}/common/laydate/laydate.js"></script>
 
 <!-- 引入dateUtilsr插件 -->

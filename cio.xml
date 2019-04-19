@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project default="jar" name="com.ciocem">
+   <!-- 工程目录结构  
+   project  
+       |-bin  
+       |-src  
+       |-build.xml  
+   -->  
+    <property name="lib.dir" value="WebContent/WEB-INF"/>  
+    <property name="src.dir" value="bin\src"/>  
+    <property name="base.dir" value="src\main\java"/>  
+    <property name="classes.dir" value="bin"/>  
+  
+    <property name="output.dir" value="target"/>  
+    <property name="jarname" value="com.ciocem.jar"/>
+
+    <property name="target" value="1.7"/>
+    <property name="source" value="1.7"/>
+    <property name="debuglevel" value="source,lines,vars" />
+<!--     <property name="mainclass" value="com.biao.Test"/>   -->
+  
+    <!-- 第三方jar包的路径 -->  
+    <path id="lib-classpath">  
+        <fileset dir="${lib.dir}">  
+            <include name="**/*.jar"/>  
+        </fileset>  
+        <!--添加lib 之外的包 -->
+		<fileset dir="D:\apache-tomcat-7.0.75\lib">
+			<include name="*.jar" />
+		</fileset>
+    </path>  
+  
+    <!-- 1. 初始化,建立目录,将多个src目录复制到同一src目录，编译，打包完成后自动清除 -->  
+    <target name="init">  
+        <mkdir dir="${classes.dir}"/>  
+        <mkdir dir="${output.dir}"/>  
+    </target>  
+    
+    <!-- 2. 编译 -->  
+    <target name="compile" depends="init">  
+        <javac srcdir="${base.dir}"  debug="true" encoding="utf-8" debuglevel="${debuglevel}"  source="${source}" target="${target}" destdir="${classes.dir}" includeAntRuntime="false">
+            <compilerarg line="-encoding UTF-8"/>  
+            <classpath refid="lib-classpath"/>  
+        </javac>  
+<!--         2.1、删除不需要打包的目录 -->
+        <delete dir="${classes.dir}/com/ciocem/modules" />  
+        <delete dir="${classes.dir}/com/ciocem/modules_app" />  
+        <echo level="info">编译完成</echo>
+    </target>  
+  
+<!--     3. 打包jar文件   -->
+    <target name="jar" depends="compile" description="打包">  
+    	<delete dir="${lib.dir}/lib/${jarname}" />  
+    	<echo level="info">旧jar删除完成</echo>  
+         <jar destfile="${lib.dir}/lib/${jarname}"  basedir="${classes.dir}">  
+            <manifest>  
+<!--                   <attribute name="Main-class" value="${mainclass}"/>     -->
+<!--                 <attribute name="Class-Path" value="${mf.classpath}"/>   -->
+            </manifest> 
+        </jar>  
+        <echo level="info">新jar打包完成</echo>  
+    </target> 
+    
+    <!-- 清理,删除临时目录 -->  
+    <target name="clean" depends="jar" description="清理,删除临时目录">  
+        <delete dir="${classes.dir}" />  
+        <echo level="info">临时文件清理完毕</echo>  
+         <echo level="info">打包成功！！</echo>  
+    </target>  
+</project>
+
+        <!--
+            cd C:\zsxIdeaPro\prd\ciocem
+            ant -buildfile cio.xml
+        -->
+<!-- http://woshizn.iteye.com/blog/568689 -->
+
+
+
+

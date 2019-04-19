@@ -1,5 +1,5 @@
 <%@ tag language="java" pageEncoding="UTF-8"%>
-<%@ include file="/webpage/include/taglib.jsp"%>
+<%@ include file="/page/include/taglib.jsp"%>
 <%@ attribute name="id" 	type="java.lang.String" required="true"  description="Id"%>
 <%@ attribute name="type" 	type="java.lang.String" required="true"  description="按钮类型"%>
 <%@ attribute name="name"	type="java.lang.String" required="true"  description="按钮名称"%>

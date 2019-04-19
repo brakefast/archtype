@@ -60,8 +60,8 @@
 <script type="text/javascript" src="${ctxStatic}/js/application/jquery-formatCurrency/jquery.numberFormat.js"></script>
 
 <!-- 引入layer插件 升级layui -->
-<script src="${ctxStatic}/js/application/layer-v3.1.0/layer/layer.js"></script>
-<script src="${ctxStatic}/js/application/layDate-v5.0.9/laydate/laydate.js"></script>
+<script src="${ctxStatic}/js/application/layer/3.1.0/layer/layer.js"></script>
+<script src="${ctxStatic}/js/application/layDate/5.0.9/laydate/laydate.js"></script>
 
 
 <!--引入webuploader-->

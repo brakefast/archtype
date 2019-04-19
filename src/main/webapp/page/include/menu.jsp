@@ -11,7 +11,7 @@
 			</c:choose>
 			<ul class="nav nav-second-level">
 				<c:set var="menus" value="${menu.children}" scope="request"/>
-				<%@ include file="/webpage/include/menu.jsp"%>
+				<%@ include file="/page/include/menu.jsp"%>
 			</ul>
 		</li>
 	</c:if>

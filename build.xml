@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="ciocem" basedir="." default="makewar">
+	<property environment="env"/>
+	<property name="releaseName" value="${env.RELEASE_NAME}"></property>
+
+	<property name="classpath_lib" value="WebContent/WEB-INF/lib" />
+	<property name="sources" value="${basedir}/src" />
+    
+	<!--添加lib 中的jar 包到项目-->
+	<path id="classpath">
+		<fileset dir="${classpath_lib}">
+			<include name="*.jar" />
+		</fileset>
+		<!--添加lib 之外的包 -->
+		<fileset dir="D:\Tomcat 7\lib">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<property name="debuglevel" value="source,lines,vars" />
+	<property name="target" value="1.7" />
+	<property name="source" value="1.7" />
+	<!-- 定义任务，清空任务：清空原有的class文件，创建新的build路径。 -->  
+	<target name="init">
+		<property name="build" value="build/webapp"></property>
+		<property name="src" value="src"></property>
+		<delete dir="${build}" />
+		<mkdir dir="${build}" />
+		<mkdir dir="${build}\WEB-INF" />
+		<mkdir dir="${build}\WEB-INF\classes" />
+		<mkdir dir="${build}\WEB-INF\lib" />
+		<copy todir="${build}">
+			<fileset dir="${basedir}\WebContent">
+				<include name="WEB-INF/**" />
+				<include name="**" />
+			</fileset>
+		</copy>
+		<copy todir="${build}\WEB-INF\classes">
+            <fileset dir="${src}\main\resources">
+               <include name="**" />
+          </fileset>
+       </copy>
+
+		<copy todir="${build}\WEB-INF\classes">
+			<fileset dir="${src}\main\resources\ant_build\${releaseName}">
+				<include name="**" />
+			</fileset>
+		</copy>
+	</target>
+	
+	<!--添加源文件内容 -->
+	<target name="complie" depends="init">
+		<javac srcdir="${src}" destdir="${build}/WEB-INF/classes" debug="true"  encoding="utf-8" classpathref="classpath"  includeAntRuntime="false" />
+	</target>
+	
+	<!--生成war 包结构 -->
+	<target name="makewar" depends="complie">
+		<war warfile="${build}/ciocem_${releaseName}.war" webxml="${build}/WEB-INF/web.xml">
+			<lib dir="${build}/WEB-INF/lib">
+				<include name="**" />
+			</lib>
+			<classes dir="${build}/WEB-INF/classes" />
+			<fileset dir="${build}" />
+		</war>
+
+		<!--复制一份到共享文件夹 -->
+		<copy todir="D:\共享软件" file="${build}/ciocem_${releaseName}.war"/>
+	</target>
+</project>  

@@ -61,14 +61,14 @@
 <script type="text/javascript" src="${ctxStatic}/js/application/jquery-formatCurrency/jquery.numberFormat.js"></script>
 
 <!-- 引入layer插件 -->
-<script src="${ctxStatic}/js/application/layer-v3.0.1/layer/layer.js"></script>
-<script src="${ctxStatic}/js/application/layer-v3.0.1/layer/laydate/laydate.js"></script>
+<script src="${ctxStatic}/js/application/layer/3.0.1/layer/layer.js"></script>
+<script src="${ctxStatic}/js/application/layer/3.0.1/layer/laydate/laydate.js"></script>
 <%--<script src="${ctxStatic}/js/application/layer-v3.1.0/layer/layer.js"></script>--%>
 <%--<script src="${ctxStatic}/js/application/layDate-v5.0.7/laydate/laydate.js"></script>--%>
 
 
 <!--引入webuploader-->
-<link rel="stylesheet" type="text/css" href="${ctxStatic}/js/application/webuploader-0.1.5/webuploader.css">
+<link rel="stylesheet" type="text/css" href="${ctxStatic}/js/application/webuploader/0.1.5/webuploader.css">
 <script type="text/javascript" src="${ctxStatic}/js/application/webuploader-0.1.5/webuploader.js"></script>
 
 <!-- 引入自定义文件 -->
@@ -106,7 +106,6 @@
 <script src="${ctxStatic}/js/application/jquery-ztree/3.5.12/js/jquery.ztree.all-3.5.js" type="text/javascript"></script>
 
 
-<link href="${ctxStatic}/js/application/jquery-ui/jquery.ui.all.css" rel="stylesheet" />
 <link href="${ctxStatic}/js/application/jqGrid/4.6/plugins/ui.multiselect.css" rel="stylesheet"/>
 <script src="${ctxStatic}/js/application/jqGrid/4.6/plugins/ui.multiselect.js" type="text/javascript"></script>
 

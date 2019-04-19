@@ -1,0 +1,813 @@
+@charset "utf-8";
+/*通用*/
+li {
+    list-style: none;
+}
+p {
+    margin: 0;
+}
+ul {
+    margin-bottom: 0;
+    padding-left: 0;
+}
+em {
+    font-family: "宋体" !important;
+    color: #999999 !important;
+}
+button:focus {
+    outline: none;
+}
+body.ciocem {
+    font-family: "Microsoft YaHei";
+    font-size: 12px;
+    background: #fff;
+}
+/*滚动条样式*/
+.ciocem .panel-body::-webkit-scrollbar,
+.ciocem #meet-msg #meet-create::-webkit-scrollbar,
+.ciocem #meet-msg #meet-join::-webkit-scrollbar,
+.ciocem #mission-list::-webkit-scrollbar{
+    width:6px;
+    height:4px;
+}
+.ciocem .panel-body::-webkit-scrollbar-track,
+.ciocem #meet-msg #meet-create::-webkit-scrollbar-track,
+.ciocem #meet-msg #meet-join::-webkit-scrollbar,
+.ciocem #mission-list::-webkit-scrollbar {
+    background: #e6e7e8;
+    border-radius:4px;
+}
+.ciocem .panel-body::-webkit-scrollbar-thumb,
+.ciocem #meet-msg #meet-create::-webkit-scrollbar-thumb,
+.ciocem #meet-msg #meet-join::-webkit-scrollbar-thumb,
+.ciocem #mission-list::-webkit-scrollbar-thumb {
+    background: #45abff;
+    border-radius:4px;
+}
+.ciocem .panel-body::-webkit-scrollbar-thumb:hover,
+.ciocem #meet-msg #meet-create::-webkit-scrollbar-thumb:hover,
+.ciocem #meet-msg #meet-join::-webkit-scrollbar-thumb:hover,
+.ciocem #mission-list::-webkit-scrollbar-thumb:hover {
+    background: #1495ff;
+}
+.ciocem .panel-body::-webkit-scrollbar-corner,
+.ciocem #meet-msg #meet-create::-webkit-scrollbar-corner,
+.ciocem #meet-msg #meet-join::-webkit-scrollbar-corner,
+.ciocem #mission-list::-webkit-scrollbar-corner {
+    background: #f6f6f6;
+}
+.ciocem .marginBottom20 {
+    margin-bottom: 20px;
+}
+.ciocem .nav-tabs a.log-navTabs {
+    width: 100px;
+}
+/*body下最大版块*/
+.ciocem .box-content {
+    width: 100%;
+    height: auto;
+}
+/*版块的头部*/
+.ciocem .ibox-title {
+    height: 32px;
+    width: 100%;
+    clear: both;
+    padding-top: 6.5px;
+    padding-bottom: 6.5px;
+}
+.ciocem #news-section .ibox-title {
+    background: url("../imgs/news.png") no-repeat;
+}
+.ciocem #warn-management .ibox-title {
+    background: url("../imgs/warn.png") no-repeat;
+}
+.ciocem #process-management .ibox-title {
+    background: url("../imgs/process.png") no-repeat;
+}
+.ciocem #meet-msg .ibox-title {
+    background: url("../imgs/meet.png") no-repeat;
+}
+.ciocem #mission-management .ibox-title {
+    background: url("../imgs/mission.png") no-repeat;
+}
+.ciocem #my-date .ibox-title {
+    background: url("../imgs/date.png") no-repeat;
+}
+.ciocem #my-outNotice .ibox-title {
+    background: url("../imgs/outNotice.png") no-repeat;
+}
+.ciocem #my-msg .ibox-title {
+    background: url("../imgs/msg.png") no-repeat;
+}
+.ciocem #emp-birth-remind .ibox-title {
+    background: url("../imgs/birth.png") no-repeat;
+}
+.ciocem #my-frequent-link .ibox-title {
+    background: url("../imgs/frequentLink.png") no-repeat;
+}
+/*版块的头部的左边*/
+.ciocem .title {
+}
+/*版块的头部的右边*/
+.ciocem .ibox-tools {
+    height: 19px;
+    padding-right: 10px;
+}
+.ciocem .ibox-tools a,
+.ciocem .ibox-tools i {
+    color: #75BFFc;
+}
+.ciocem .ibox-tools i {
+    margin-right: 6px;
+}
+.ciocem .ibox-tools a:hover,
+.ciocem .ibox-tools i:hover {
+    color: #3ca5fb;
+    cursor: pointer;
+}
+/*版块的内容*/
+.ciocem .ibox-content {
+    width: 100%;
+    height: auto;
+    min-height: 104px;
+    max-height: 300px;
+    overflow: hidden;
+    padding: 0 5px;
+}
+.ciocem .panel {
+    margin-bottom: 0;
+    -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, 0);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0);
+}
+/*版块的内容的导航*/
+.ciocem .panel-heading {
+    height: 32px;
+    line-height: 32px;
+    padding: 0;
+    border: none;
+}
+.ciocem .panel-heading ul,
+.ciocem .panel-heading ul li{
+    height: 100%;
+}
+.ciocem .panel-heading strong {
+    font-size: 12px;
+    padding: 5px 0 10px 0;
+    word-wrap: break-word;
+    vertical-align: top;
+    margin-right: 0;
+    font-family: "宋体";
+    color: #666666;
+    font-weight: normal;
+}
+.ciocem .nav-tabs {
+    height: 100%;
+    border: none;
+}
+.ciocem .nav-tabs li {
+    height: 100%;
+    text-align: center;
+}
+.ciocem .nav-tabs a {
+    width: 77px;
+    font-size: 12px;
+    padding: 5px 0 10px 0;
+    word-wrap: break-word;
+    vertical-align: top;
+    margin-right: 0;
+    border: none;
+    font-family: "黑体";
+    color: #777777;
+}
+@media screen and (max-width: 1366px) {
+    .ciocem .nav-tabs a {
+        width: 60px;
+    }
+}
+.ciocem .nav-tabs a:hover {
+    background: none;
+    border: none;
+    font-weight: 600;
+}
+.ciocem .nav-tabs li.active > a {
+    border: none;
+    color: #299EFF;
+}
+/*版块的内容的正文*/
+.ciocem .panel-body {
+    width: 100%;
+    padding: 0 15px;
+    height: auto;
+    max-height: 198px;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+/*新闻版块的内容*/
+.ciocem #news-section li {
+    height: auto;
+    min-height: 21px;
+    max-height: 63px;
+}
+.ciocem #news-section li .row {
+    margin: 0;
+    height: auto;
+    max-height: 63px;
+    width: 100%;
+}
+.ciocem #news-section .pic_area {
+    display: inline-block;
+    width: 96px;
+}
+.ciocem #news-section .news_item_div,
+.ciocem #news-section .news_content {
+    display: inline-block;
+    width: calc(100% - 100px);
+    clear: both;
+    max-height: 63px;
+    vertical-align: middle;
+}
+.ciocem #news-section .news_item_div .a-box,
+.ciocem #news-section .news_content .a-box {
+    float: left;
+    width: calc(100% - 80px);
+    height: auto;
+    max-height: 63px;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+}
+.ciocem #news-section li div > div span {
+    width: 80px;
+    text-align: center;
+    line-height: 17px;
+    color:#999999;
+    font-family: '宋体';
+    float: right;
+}
+.ciocem #news-section .news_item {
+    padding: 2px 0;
+}
+.ciocem #news-section li img {
+    width: 96px;
+    height: 63px;
+    padding: 2px;
+}
+.ciocem #news-section li div > div a {
+    color:#999999;
+    font-family: '宋体';
+}
+.ciocem .new-pho{
+    display: inline-block;
+    margin-top: -12px;
+    -webkit-animation:newsP .5s infinite;
+    -o-animation:newsP .5s infinite;
+    animation:newsP .5s infinite;
+}
+.ciocem #news-section .panel-body li img.new-pho {
+    height: 30px;
+    width: 30px;
+}
+@keyframes newsP {
+    from{transform: translateY(1px) rotate(5deg);}
+    to{transform: translateY(-1px) rotate(-5deg);}
+}
+@-webkit-keyframes newsP {
+    from{transform: translateY(1px) rotate(5deg);}
+    to{transform: translateY(-1px) rotate(-5deg);}
+}
+@-moz-keyframes newsP {
+    from{transform: translateY(1px) rotate(5deg);}
+    to{transform: translateY(-1px) rotate(-5deg);}
+}
+@-o-keyframes newsP {
+    from{transform: translateY(1px) rotate(5deg);}
+    to{transform: translateY(-1px) rotate(-5deg);}
+}
+
+/*预警管理*/
+.ciocem #warn-management .panel-heading {
+    padding: 0 15px;
+}
+.ciocem #warn-management .panel-body li:first-child {
+    height: 21px;
+}
+.ciocem #warn-management .list-group-item {
+    padding: 2px 15px;
+    border: none;
+}
+.ciocem #warn-management button{
+    width: 51px;
+    height: 17px;
+    padding: 0;
+    border: none;
+    border-radius: 8.5px;
+}
+.ciocem #warn-management button:hover {
+    opacity: 0.8;
+    filter:alpha(opacity=80);
+}
+.ciocem #warn-management button img {
+    width: 100%;
+    height: 100%;
+}
+.ciocem #warn-management .panel-heading li div:nth-of-type(1),
+.ciocem #warn-management .panel-body li:nth-of-type(1) div:nth-of-type(1) {
+    padding-left: 15px;
+    width: 64%;
+}
+.ciocem #warn-management .panel-heading li div:nth-of-type(2),
+.ciocem #warn-management .panel-heading li div:nth-of-type(3),
+.ciocem #warn-management .panel-body li.list-group-item div div:nth-of-type(2),
+.ciocem #warn-management .panel-body li.list-group-item div div:nth-of-type(3) {
+    width: 18%;
+    text-align: center;
+}
+.ciocem #warn-management .panel-body li.list-group-item div div:nth-of-type(3) {
+    text-align: right;
+}
+.ciocem #warn-management .panel-body li:nth-of-type(1) div:nth-of-type(2),
+.ciocem #warn-management .panel-body li:nth-of-type(1) div:nth-of-type(3) {
+    width: 18%;
+}
+.ciocem #warn-management .panel-body li.list-group-item div div:nth-of-type(1) {
+    width: 64%;
+}
+.ciocem #warn-management li div {
+    font-family: "宋体";
+    color: #999999;
+}
+.ciocem #warn-management li div > span {
+    color: #4EC64E !important;
+}
+.ciocem #warn-management li div > strong > span {
+    font-family: "宋体";
+    color: #3399FF;
+}
+.ciocem #warn-management .panel-body {
+    width: 100%;
+}
+
+/*流程管理*/
+.ciocem #process-management .badge{
+    font-family: "宋体";
+    color: #43aaFF;
+    background: none;
+}
+.ciocem #process-management .badge:hover {
+    color: #0f93ff;
+    cursor: pointer;
+}
+.ciocem #process-management button{
+    width: 51px;
+    height: 17px;
+    padding: 0;
+    border: none;
+    border-radius: 8.5px;
+}
+.ciocem #process-management button:hover {
+    opacity: 0.8;
+    filter:alpha(opacity=80);
+}
+.ciocem #process-management button img {
+    width: 100%;
+    height: 100%;
+}
+.ciocem #process-management .ibox-tools {
+    display: none;
+}
+.ciocem #process-management .more-process  a {
+    padding-right: 16px;
+    color: #75BFFc;
+}
+.ciocem #process-management .more-process  a:hover{
+    color: #3ca5fb;
+    cursor: pointer;
+}
+.ciocem #charge-process > .list-group-item {
+    margin-bottom: 2px;
+    padding: 0;
+    border: none;
+}
+.ciocem #charge-process > .list-group-item .list-group {
+    margin-bottom: 0;
+}
+.ciocem #charge-process > .list-group-item > .list-group-title {
+    padding: 2px 0;
+    font-family: "宋体";
+    color: #666666;
+}
+.ciocem #charge-process > .list-group-item .list-group-item {
+    padding: 2px 0 2px 20px;
+    border: none;
+    height: 21px;
+    clear: both;
+}
+.ciocem #charge-process > .list-group-item .list-group-item div {
+    font-family: "宋体";
+    color: #999999;
+}
+.ciocem #charge-process > .list-group-item .list-group-item .charge-process-name,
+.ciocem #charge-done > .list-group-item .list-group-item .my-process-name,
+.ciocem #charge-doing > .list-group-item .list-group-item .charge-process-name,
+.ciocem #charge-stop > .list-group-item .list-group-item .my-process-name,
+.ciocem #my-process > .list-group-item .list-group-item .my-process-name{
+    width: calc(100% - 160px);
+    overflow: hidden;
+    text-overflow:ellipsis;
+    white-space: nowrap;
+}
+.ciocem #my-process > .list-group-item {
+    margin-bottom: 6px;
+    padding: 0;
+    border: none;
+}
+.ciocem #my-process > .list-group-item .list-group {
+    margin-bottom: 0;
+}
+.ciocem #my-process > .list-group-item > .list-group-title {
+    padding: 6px 0;
+    font-family: "宋体";
+    color: #666666;
+}
+.ciocem #my-process > .list-group-item .list-group-item {
+    padding: 0 15px 0 20px;
+    border: none;
+    height: 21px;
+    clear: both;
+}
+.ciocem #my-process > .list-group-item .list-group-item div{
+    padding: 2px 0;
+    font-family: "宋体";
+    color: #999999;
+}
+.ciocem #charge-doing > .list-group-item {
+    margin-bottom: 6px;
+    padding: 0;
+    border: none;
+}
+.ciocem #charge-doing > .list-group-item .list-group {
+    margin-bottom: 0;
+}
+.ciocem #charge-doing > .list-group-item > .list-group-title {
+    padding: 6px 0;
+    font-family: "宋体";
+    color: #666666;
+}
+.ciocem #charge-doing > .list-group-item .list-group-item {
+    padding: 0 0 0 20px;
+    border: none;
+    height: 21px;
+    clear: both;
+}
+.ciocem #charge-doing > .list-group-item .list-group-item div {
+    padding: 2px 0;
+    font-family: "宋体";
+    color: #999999;
+}
+.ciocem #charge-done > .list-group-item {
+     margin-bottom: 6px;
+     padding: 0;
+     border: none;
+ }
+.ciocem #charge-done > .list-group-item .list-group {
+    margin-bottom: 0;
+}
+.ciocem #charge-done > .list-group-item > .list-group-title {
+    padding: 6px 0;
+}
+.ciocem #charge-done > .list-group-item .list-group-item {
+    padding: 0 15px 0 20px;
+    border: none;
+    height: 21px;
+    clear: both;
+}
+.ciocem #charge-done > .list-group-item .list-group-item div {
+    color: #969696;
+    padding: 2px 0;
+}
+.ciocem #charge-stop > .list-group-item {
+    margin-bottom: 6px;
+    padding: 0;
+    border: none;
+}
+.ciocem #charge-stop > .list-group-item .list-group {
+    margin-bottom: 0;
+}
+.ciocem #charge-stop > .list-group-item > .list-group-title {
+    padding: 6px 0;
+}
+.ciocem #charge-stop > .list-group-item .list-group-item {
+    padding: 0 15px 0 20px;
+    border: none;
+    height: 21px;
+    clear: both;
+}
+.ciocem #charge-stop > .list-group-item .list-group-item div {
+    color: #969696;
+    padding: 2px 0;
+}
+.ciocem #charge-manage .nav-tabs a {
+    padding: 0 0 5px 0;
+}
+.ciocem #charge-manage .panel-heading {
+    height: 22px;
+    line-height: 22px;
+}
+.ciocem #charge-manage .charge-nav {
+    height: 100%;
+}
+.ciocem #process-management .title_span{
+    color:#999999;
+    font-family: '宋体';
+    padding-right: 6px;
+}
+.ciocem #process-management #process-list ul {
+    margin-bottom: 0;
+}
+
+/*会议消息版块的导航*/
+.ciocem #meet-msg .panel-body {
+    overflow-y: hidden;
+    max-height: 174px;
+}
+.ciocem #meet-msg .panel-body #meet-list {
+    height: auto;
+    overflow-y: hidden;
+}
+.ciocem #meet-msg #meet-create,
+.ciocem #meet-msg #meet-join {
+    max-height: 153px;
+    overflow-y: auto;
+}
+.ciocem #meet-msg .panel-body  .meet_ul {
+    height: 21px;
+    line-height: 21px;
+}
+.ciocem #meet-msg .panel-body  .meet_ul > li {
+    height: auto;
+}
+.ciocem #meet-msg .panel-body  .meet_ul strong {
+    font-size: 12px;
+    padding: 2px 0 2px 0;
+    word-wrap: break-word;
+    vertical-align: top;
+    margin-right: 0;
+    font-family: "宋体";
+    color: #666666;
+    font-weight: normal;
+}
+.ciocem #meet-msg .panel-body .tpl1_div,
+.ciocem #meet-msg .panel-body .tpl2_div {
+    font-family: "宋体";
+    color: #999999;
+}
+.ciocem #meet-msg .list-group-item {
+    padding: 2px 15px;
+    border: none;
+}
+.ciocem #meet-msg .list-group {
+    margin-bottom: 0;
+}
+.ciocem #meet-msg .panel-body button {
+    vertical-align: top;
+    width: 51px;
+    height: 17px;
+    padding: 0;
+    border: none;
+    border-radius: 8.5px;
+}
+.ciocem #meet-msg .panel-body button:hover {
+    opacity: 0.8;
+    filter:alpha(opacity=80);
+}
+.ciocem #meet-msg .panel-body button img {
+    width: 100%;
+    height: 100%;
+}
+.ciocem #meet-msg .panel-body #meet-join button {
+    display: inline-block;
+    width: 45px;
+}
+.ciocem #meet-msg .panel-body .panelbody_div:nth-of-type(1),
+.ciocem #meet-msg .panel-body .tpl2_div:nth-of-type(1),
+.ciocem #meet-msg .panel-body .create_div:nth-of-type(2),
+.ciocem #meet-msg .panel-body .tpl1_div:nth-of-type(2){
+    padding-left: 15px;
+    width: 55%;
+}
+.ciocem #meet-msg .panel-body .panelbody_div:nth-of-type(2),
+.ciocem #meet-msg .panel-body .tpl2_div:nth-of-type(2),
+.ciocem #meet-msg .panel-body .create_div:nth-of-type(3),
+.ciocem #meet-msg .panel-body .tpl1_div:nth-of-type(3){
+    width: 20%;
+}
+.ciocem #meet-msg .panel-body .panelbody_div:nth-of-type(3),
+.ciocem #meet-msg .panel-body .tpl2_div:nth-of-type(3) {
+    width: 25%;
+    text-align: center;
+}
+.ciocem #meet-msg .panel-body .create_div:nth-of-type(1),
+.ciocem #meet-msg .panel-body .tpl1_div:nth-of-type(1) {
+    width: 10%;
+}
+.ciocem #meet-msg .panel-body .create_div:nth-of-type(4),
+.ciocem #meet-msg .panel-body .tpl1_div:nth-of-type(4){
+    width: 15%;
+    text-align: center;
+}
+
+/*任务管理*/
+.ciocem #mission-management .ibox-content {
+    max-height: 9999px;
+    min-height: 0;
+}
+.ciocem #mission-management .panel-body {
+    padding: 0 15px;
+    min-height: 0;
+    max-height: 9999px;
+    overflow-y: visible;
+    margin: 0 auto;
+}
+.ciocem #mission-management .Itaskbutton {
+    width: 162.5px;
+    height: 104px;
+    border: none;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+.ciocem #mission-management .row .Itaskbutton:nth-of-type(1) {
+    background: #f44336;
+}
+.ciocem #mission-management .row .Itaskbutton:nth-of-type(2) {
+    background: #2196f3;
+}
+.ciocem #mission-management .row .Itaskbutton:nth-of-type(3) {
+    background: #00bcd4;
+}
+.ciocem #mission-management .row .Itaskbutton:nth-of-type(4) {
+    background: #ff9800;
+}
+.ciocem #mission-management .Itaskbutton span {
+    display: inline-block;
+    width: 100%;
+    text-align: left;
+    padding-left: 39px;
+}
+
+/*员工生日模块*/
+.ciocem #emp-birth-remind .panel-body {
+    max-height: 105px;
+    overflow: hidden;
+}
+.ciocem #emp-birth-remind .ibox-tools button {
+    font-family: "Microsoft YaHei"!important;
+    font-size: 12px;
+    padding: 0 3px;
+    border: none;
+    background: none;
+    color: #9e9e9e;
+}
+.ciocem #emp-birth-remind .ibox-tools button:hover {
+    color: #565656;
+}
+.ciocem #emp-birth-remind .ibox-content .hd {
+    height: 100%;
+}
+.ciocem #emp-birth-remind .ibox-content .hd p {
+    height: 32px;
+    line-height: 32px;
+    padding: 2px 0;
+    margin: 0;
+    font-family: "宋体";
+    font-weight: bold;
+    color: #F96B6B;
+}
+.ciocem #emp-birth-remind .ibox-content .bd li {
+    padding: 2px 0;
+    font-family: "宋体";
+    color: #999999
+}
+.ciocem #emp-birth-remind .ibox-content textarea{
+    width: 100%;
+    height: 76px;
+    margin-bottom: 6px;
+    max-height: 76px;
+    overflow-y: auto;
+}
+.ciocem #my-date .ibox-content {
+    position: relative;
+}
+
+/*我的消息*/
+.ciocem #my-msg .panel-heading li:first-child {
+    height: 21px;
+}
+.ciocem #my-msg .list-group-item {
+    padding: 2px 15px;
+    border: none;
+}
+.ciocem #my-msg .list-group-item a {
+    font-family: "宋体";
+    color: #999999
+}
+.ciocem #my-msg .list-group {
+    margin-bottom: 0;
+}
+.ciocem #my-msg .panel-heading li > div:nth-of-type(1),
+.ciocem #my-msg .panel-body .myMsg_div:nth-of-type(1) {
+    padding-left: 15px;
+    width: 32%;
+}
+.ciocem #my-msg .panel-heading li > div:nth-of-type(2),
+.ciocem #my-msg .panel-body .myMsg_div:nth-of-type(2) {
+    width: 68%;
+}
+
+/*外出公告*/
+.ciocem #my-outNotice .list-group-item {
+    position: inherit;
+    border: none;
+    padding: 2px 15px;
+}
+.ciocem #my-outNotice .list-group {
+    margin-bottom: 0;
+}
+.ciocem #my-outNotice li a {
+    font-family: "宋体";
+    color: #999999;
+}
+.ciocem #my-outNotice .panel-heading li > div:nth-of-type(1),
+.ciocem #my-outNotice .panel-body li > div > div:nth-of-type(1) {
+    width: 10%;
+}
+.ciocem #my-outNotice .panel-heading li > div:nth-of-type(2),
+.ciocem #my-outNotice .panel-body li > div > div:nth-of-type(2) {
+    width: 25%;
+}
+.ciocem #my-outNotice .panel-heading li > div:nth-of-type(3),
+.ciocem #my-outNotice .panel-body li > div > div:nth-of-type(3) {
+    width: 30%;
+}
+.ciocem #my-outNotice .panel-heading li > div:nth-of-type(4),
+.ciocem #my-outNotice .panel-body li > div > div:nth-of-type(4) {
+    width: 35%;
+}
+
+/*常用链接*/
+.ciocem #my-frequent-link .list-group-item {
+    position: inherit;
+    border: none;
+    padding: 2px 15px;
+}
+.ciocem #my-frequent-link .list-group {
+    margin-bottom: 0;
+}
+.ciocem #my-frequent-link li a {
+    font-family: "宋体";
+    color: #999999;
+    word-wrap: break-word;
+    word-break: normal;
+}
+.ciocem #my-frequent-link .panel-heading li > div:nth-of-type(1),
+.ciocem #my-frequent-link .panel-body li > div > div:nth-of-type(1) {
+    width: 10%;
+}
+.ciocem #my-frequent-link .panel-heading li > div:nth-of-type(2),
+.ciocem #my-frequent-link .panel-body li > div > div:nth-of-type(2) {
+    width: 40%;
+}
+.ciocem #my-frequent-link .panel-heading li > div:nth-of-type(3),
+.ciocem #my-frequent-link .panel-body li > div > div:nth-of-type(3) {
+    width: 50%;
+}
+.ciocem #my-frequent-link .row > div:nth-of-type(3) {
+    padding-left: 8px;
+}
+.ciocem #my-frequent-link .panel-heading {
+    padding: 0 15px;
+}
+
+/*日志日程*/
+.ciocem #my-date input {
+    width: 98px;
+    height: 28px;
+    background: #edF0F2;
+    border: none;
+    font-family: "宋体";
+    color: #666666;
+    text-align: center;
+}
+.ciocem #my-date .panel-heading li > div:nth-of-type(1),
+.ciocem #my-date .panel-body .myDate_div:nth-of-type(1) {
+    padding-left: 15px;
+    width: 32%;
+}
+.ciocem #my-date .panel-heading li > div:nth-of-type(2),
+.ciocem #my-date .panel-body .myDate_div:nth-of-type(2) {
+    width: 68%;
+}
+.ciocem #my-date .panel-body .myDate_div a {
+    color: #999;
+}

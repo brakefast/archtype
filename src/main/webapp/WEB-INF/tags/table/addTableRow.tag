@@ -1,5 +1,5 @@
 <%@ tag language="java" pageEncoding="UTF-8"%>
-<%@ include file="/webpage/include/taglib.jsp"%>
+<%@ include file="/page/include/taglib.jsp"%>
 <%@ attribute name="title" type="java.lang.String" required="true"%>
 <%@ attribute name="tableId" type="java.lang.String" required="false"%>
 <%@ attribute name="formUrl" type="java.lang.String" required="true"%>
