@@ -38,7 +38,7 @@ public class Global {
     /**
      * 属性文件加载对象
      */
-    private static PropertiesLoader loader = new PropertiesLoader("ciocem.properties");
+    private static PropertiesLoader loader = new PropertiesLoader("archetype.properties");
 
     /**
      * 显示/隐藏
@@ -198,7 +198,7 @@ public class Global {
             // 从输入流中读取属性列表（键和元素对）
             Properties prop = getProperties();
             prop.setProperty(key, value);
-            String path = Global.class.getResource("/ciocem.properties").getPath();
+            String path = Global.class.getResource("/archetype.properties").getPath();
             FileOutputStream outputFile = new FileOutputStream(path);
             prop.store(outputFile, "modify");
             outputFile.close();
@@ -217,7 +217,7 @@ public class Global {
     public static Properties getProperties(){
         Properties prop = new Properties();
         try {
-            Reader reader = Resources.getResourceAsReader("/ciocem.properties");
+            Reader reader = Resources.getResourceAsReader("/archetype.properties");
             prop.load(reader);
         } catch (Exception e) {
             return null;
